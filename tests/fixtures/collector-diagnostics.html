@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Collector diagnostics fixture</title>
+  </head>
+  <body>
+    <h1>Collector diagnostics fixture</h1>
+    <button id="action-event" type="button">Create action event</button>
+    <button id="ui-issue" type="button">Create UI issue</button>
+    <button id="console-error" type="button">Create console error</button>
+    <button id="uncaught-error" type="button">Create uncaught error</button>
+    <button id="unhandled-rejection" type="button">
+      Create unhandled rejection
+    </button>
+    <button id="fetch-404" type="button">Create fetch 404</button>
+    <button id="xhr-error" type="button">Create XHR error</button>
+    <button id="history-nav" type="button">Navigate with History API</button>
+    <button id="change-title" type="button">Change page title</button>
+    <script>
+      document.getElementById('action-event')?.addEventListener('click', () => {
+        /* One real click on this button is the action event. */
+      });
+      document.getElementById('ui-issue')?.addEventListener('click', () => {
+        const alert = document.createElement('div');
+        alert.setAttribute('role', 'alert');
+        alert.textContent = 'Diagnostics UI issue';
+        document.body.appendChild(alert);
+      });
+      document
+        .getElementById('console-error')
+        ?.addEventListener('click', () => {
+          console.error('Diagnostics console error');
+        });
+      document
+        .getElementById('uncaught-error')
+        ?.addEventListener('click', () => {
+          setTimeout(() => {
+            throw new Error('Diagnostics uncaught error');
+          }, 0);
+        });
+      document
+        .getElementById('unhandled-rejection')
+        ?.addEventListener('click', () => {
+          void Promise.reject(new Error('Diagnostics unhandled rejection'));
+        });
+      document.getElementById('fetch-404')?.addEventListener('click', () => {
+        void fetch('/diagnostics-missing').catch(() => undefined);
+      });
+      document.getElementById('xhr-error')?.addEventListener('click', () => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', '/diagnostics-missing');
+        xhr.send();
+      });
+      document.getElementById('history-nav')?.addEventListener('click', () => {
+        history.pushState({}, '', '/diagnostics-spa-route');
+        document.title = 'Diagnostics SPA route';
+        window.postMessage({ type: 'BUG_CAPTURE_ASSISTANT_HISTORY' }, '*');
+      });
+      document.getElementById('change-title')?.addEventListener('click', () => {
+        document.title = 'Diagnostics title changed';
+      });
+    </script>
+  </body>
+</html>

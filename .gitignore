@@ -1,0 +1,10 @@
+node_modules/
+.output/
+public/content-scripts/console-bridge.js
+.wxt/
+coverage/
+dist/
+*.local
+playwright-report/
+test-results/
+blob-report/

@@ -1,0 +1,4 @@
+export const MAX_UI_VISIBLE_MESSAGE_LENGTH = 500;
+export const MAX_UI_RULE_SELECTOR_LENGTH = 500;
+export const MAX_UI_RULE_NAME_LENGTH = 120;
+export const MAX_STORED_UI_ISSUES = 100;

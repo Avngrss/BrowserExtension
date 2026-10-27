@@ -1,0 +1,27 @@
+@import 'tailwindcss';
+
+@source '../';
+@source '../../entrypoints';
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #020617;
+    color: #f8fafc;
+  }
+}
