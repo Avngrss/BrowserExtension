@@ -20,20 +20,23 @@ npm install
 
 ## Commands
 
-| Command             | Purpose                                                |
-| ------------------- | ------------------------------------------------------ |
-| `npm run dev`       | WXT dev server + Chrome with extension                 |
-| `npm run build`     | Production build → `.output/chrome-mv3`                |
-| `npm run check`     | typecheck, lint, format, unit tests, build             |
-| `npm run test:run`  | Vitest once                                            |
-| `npm run test:e2e`  | **Build + Playwright tests only** (no browser install) |
-| `npm run typecheck` | `tsc --noEmit`                                         |
+| Command               | Purpose                                                |
+| --------------------- | ------------------------------------------------------ |
+| `npm run dev`         | WXT dev server + Chrome with extension                 |
+| `npm run build`       | Production build → `.output/chrome-mv3`                |
+| `npm run check`       | typecheck, lint, format, unit tests, build             |
+| `npm run test:run`    | Vitest once                                            |
+| `npm run test:e2e`    | **Build + Playwright tests only** (no browser install) |
+| `npm run typecheck`   | `tsc --noEmit`                                         |
+| `npm run diagnostics` | Collector diagnostics page for manual QA on port 8765  |
 
 Load unpacked: `.output/chrome-mv3` via `chrome://extensions` (Developer mode).
 
 ## Manual QA
 
 **[docs/manual-testing/README.md](./docs/manual-testing/README.md)** — ручной набор тестов (Russian): smoke checklist, session, collectors, screenshots, Review, Settings, E2E.
+
+**[docs/manual-testing/acceptance.md](./docs/manual-testing/acceptance.md)** — приёмка текущего этапа на своём компьютере: подготовка с нуля, какие кейсы пройти, что записать.
 
 ## Automated E2E (Playwright)
 

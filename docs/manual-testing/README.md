@@ -4,6 +4,8 @@
 
 **Не описываем (не реализовано):** Export (копирование и скачивание промпта), другие режимы Prompt Builder, LLM, webhook, Jira, YouTrack, история прошлых сессий. **Generate prompt** на карточке **Potential bug** открывает единственный режим **Steps for bug ticket** (см. SES-005).
 
+**Приёмка текущего этапа:** [acceptance.md](./acceptance.md) — подготовка с нуля, какие кейсы пройти и что записать.
+
 ## Сборка и загрузка extension
 
 1. В корне репозитория: `npm run build`.
@@ -23,7 +25,7 @@ URL: `https://automationexercise.com/`
 
 ### Collector diagnostics (технические collectors)
 
-Локальная страница с кнопками для предсказуемых Console, Network, UI и скриншотов. Команда запуска сервера и URL указаны **в начале каждого тематического файла**, где diagnostics обязателен. Не является общим предусловием всего набора.
+Локальная страница с кнопками для предсказуемых Console, Network, UI и скриншотов. Сервер: `npm run diagnostics` (Python не нужен), URL `http://127.0.0.1:8765/collector-diagnostics.html` — они же указаны **в начале каждого тематического файла**, где diagnostics обязателен. Не является общим предусловием всего набора.
 
 ## Формат кейсов
 
@@ -54,6 +56,7 @@ URL: `https://automationexercise.com/`
 
 ## Файлы
 
+- [acceptance.md](./acceptance.md) — приёмка текущего этапа
 - [smoke-checklist.md](./smoke-checklist.md) — один критический путь
 - [session-management.md](./session-management.md) — сессия и вкладки
 - [action-capture.md](./action-capture.md) — Actions

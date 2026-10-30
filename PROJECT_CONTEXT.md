@@ -96,7 +96,7 @@ See `package.json`, `wxt.config.ts`, root `README.md`.
 | **MAIN world**                | `public/content-scripts/console-bridge.js` — console/network hooks where CSP requires it                                         |
 | **Side panel**                | `entrypoints/sidepanel/` — Capture, Summary, Issue Review                                                                        |
 | **Options**                   | `entrypoints/options/` — extension settings and custom UI rules                                                                  |
-| **Collector diagnostics**     | WXT page + local HTTP fixture (`tests/helpers/diagnostics-server.ts`) for Playwright/manual                                      |
+| **Collector diagnostics**     | WXT page + local HTTP fixture: `tests/helpers/diagnostics-server.ts` (Playwright), `npm run diagnostics` on port 8765 (manual)   |
 
 **Messaging:** typed messages in `src/messaging/*`; side panel uses runtime `sendMessage` + broadcast subscriptions (`src/utils/*-client.ts`).
 
@@ -312,8 +312,8 @@ Do **not** recommend deleting structured report code until Prompt Builder reuses
 ## Immediate next priorities
 
 1. **Reconcile this file with the repo** after any drift (next AI session step zero).
-2. **Manual acceptance of Potential bugs + Steps for bug ticket** — SES-005 steps 1b–1g and end-to-end scenario step 4a in `docs/manual-testing/`.
-3. **Validate prompt quality on real captures** (e.g. Automation Exercise) — paste prompts into an AI assistant / tracker; fix only what materially affects usefulness. Export (Copy) only after this.
+2. **Manual acceptance of Potential bugs + Steps for bug ticket** — checklist in `docs/manual-testing/acceptance.md`: SES-005 steps 1b–1g, E2E-002 (prompt follows Review dispositions), E2E-004 step 4a.
+3. **Validate prompt quality on real captures** — E2E-006 (Automation Exercise → prompt → AI assistant, list of manual ticket edits); fix only what materially affects usefulness. Export (Copy) only after this.
 4. Keep Summary **card-centric**; resist re-expanding session-level forms on the primary screen.
 
 Playwright lifecycle specs use **`startRecordingOnPage`** / **`clickSidePanelControl`** (full extension suite was green at last run).

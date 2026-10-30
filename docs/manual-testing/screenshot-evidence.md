@@ -9,7 +9,7 @@
 ## Collector diagnostics
 
 ```bash
-python -m http.server 8765 --directory tests/fixtures
+npm run diagnostics
 ```
 
 URL: `http://127.0.0.1:8765/collector-diagnostics.html`
