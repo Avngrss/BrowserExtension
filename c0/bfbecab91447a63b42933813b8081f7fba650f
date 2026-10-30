@@ -1,0 +1,33 @@
+.gitattributes
+  s_609d87acd613db::t_1526db800cef67 1-2
+PROJECT_CONTEXT.md
+  s_e2d4076257a135::t_edbbf2ba09abdb 188-192
+README.md
+  s_e2d4076257a135::t_6d8f0e2577b32a 19
+package.json
+  s_e2d4076257a135::t_23b6d37aa6fb21 13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c0bfbecab91447a63b42933813b8081f7fba650f",
+  "prompts": {},
+  "sessions": {
+    "s_609d87acd613db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "256fc20a-d1a0-4a80-b68f-505bdbf97ac5",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "avngrss <sedow94@mail.ru>"
+    },
+    "s_e2d4076257a135": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "614d92f0-3a9f-420a-a45a-e9080febf8c5",
+        "model": "unknown"
+      },
+      "human_author": "avngrss <sedow94@mail.ru>"
+    }
+  }
+}
