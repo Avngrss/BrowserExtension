@@ -1,0 +1,49 @@
+PROJECT_CONTEXT.md
+  s_e2d4076257a135::t_28be9b6556c453 14,55,65-68,164,175,247,256,293-298,301-302,315-316,396,445,451
+docs/manual-testing/README.md
+  s_e2d4076257a135::t_24245a199ba0ce 5
+docs/manual-testing/end-to-end-scenarios.md
+  s_e2d4076257a135::t_f4de5120e7986c 95-99
+docs/manual-testing/session-management.md
+  s_e2d4076257a135::t_1587dca7b8a88d 153,161,167-174
+entrypoints/sidepanel/App.tsx
+  s_e2d4076257a135::t_57d91a8d29e812 11,53-54,310,342-353
+src/components/PotentialBugCard.tsx
+  s_e2d4076257a135::t_264b01e27119cb 6,13,27,45,63-68,71-75
+src/components/PotentialBugPromptScreen.tsx
+  s_e2d4076257a135::t_28ab487fa12ecc 1-97
+src/components/SessionSummaryScreen.tsx
+  s_e2d4076257a135::t_8193082b5218e0 38,69,210-212
+src/hooks/useSidePanelView.ts
+  s_e2d4076257a135::t_074c462217c181 4,11,13,17,25-27,38-42,47
+src/potential-bugs/potential-bug-description.ts
+  s_e2d4076257a135::t_fda1c0abb70fc9 28-31
+src/prompt/steps-for-bug-ticket-prompt.ts
+  s_e2d4076257a135::t_c9c3c21262b5d9 1-128
+tests/extension/potential-bugs.spec.ts
+  s_e2d4076257a135::t_052a25cc7f4070 62-73,82-84
+tests/unit/potential-bug-prompt-screen.test.tsx
+  s_e2d4076257a135::t_1e3d3f92b64fa7 1-81
+tests/unit/session-summary-screen.test.tsx
+  s_e2d4076257a135::t_a26aefe27dde92 51,124,128-131,162-171
+tests/unit/side-panel-view.test.ts
+  s_e2d4076257a135::t_4149e2f603a4fa 1,22-55
+tests/unit/steps-for-bug-ticket-prompt.test.ts
+  s_e2d4076257a135::t_58b27c5adb23c2 1-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0267e1e6d085c14743131491633585b1aac9ec00",
+  "prompts": {},
+  "sessions": {
+    "s_e2d4076257a135": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "614d92f0-3a9f-420a-a45a-e9080febf8c5",
+        "model": "unknown"
+      },
+      "human_author": "avngrss <sedow94@mail.ru>"
+    }
+  }
+}
