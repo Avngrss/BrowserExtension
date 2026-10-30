@@ -1,0 +1,47 @@
+README.md
+  s_b9187fa68058c2::t_78b4edf8cbb49d 23-31,39-40
+docs/manual-testing/acceptance.md
+  s_b9187fa68058c2::t_e6c1900d593c14 1-50
+docs/manual-testing/console-issues.md
+  s_b9187fa68058c2::t_2a25f270405787 12
+docs/manual-testing/end-to-end-scenarios.md
+  s_a775519e034bb0::t_6c21c7ea6e1788 33,41,49-52,128-165
+docs/manual-testing/network-issues.md
+  s_b9187fa68058c2::t_8f2d275e6fe4be 12
+docs/manual-testing/screenshot-evidence.md
+  s_b9187fa68058c2::t_453e849b26487a 12
+docs/manual-testing/ui-issues.md
+  s_b9187fa68058c2::t_06e4d6e880a3e9 12
+package.json
+  s_a775519e034bb0::t_777647d7933e18 13
+scripts/serve-diagnostics.mjs
+  s_a775519e034bb0::t_e57f5b15b9fab3 1-64
+PROJECT_CONTEXT.md
+  s_a775519e034bb0::t_3d6bee79990e98 99,315-316
+docs/manual-testing/README.md
+  s_a775519e034bb0::t_1fe9a8f7b86795 7-8,28,59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "53d54cffdcce3dd8d3cfc0544281970b6e8a161d",
+  "prompts": {},
+  "sessions": {
+    "s_a775519e034bb0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ba371dc8-f307-47a6-81f9-c7b2aecd3742",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "avngrss <sedow94@mail.ru>"
+    },
+    "s_b9187fa68058c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a5141de9-db86-4cd5-8ab1-bda3b71b474e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "avngrss <sedow94@mail.ru>"
+    }
+  }
+}
