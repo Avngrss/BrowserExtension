@@ -10,7 +10,7 @@
     "dev": "wxt",
     "build": "node scripts/build-console-bridge.mjs && wxt build && node scripts/assert-console-bridge-bundle.mjs",
     "zip": "wxt zip",
-    "postinstall": "wxt prepare",
+    "postinstall": "node scripts/build-console-bridge.mjs && wxt prepare",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",

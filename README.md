@@ -16,7 +16,7 @@ Prerequisites: Node.js 22+, npm 11+.
 npm install
 ```
 
-`postinstall` runs `wxt prepare` only (no Playwright browser download).
+`postinstall` builds the generated console bridge (`public/content-scripts/console-bridge.js`, gitignored) and runs `wxt prepare`, so `npm run typecheck` works on a fresh clone. It does not download Playwright browsers.
 
 ## Commands
 

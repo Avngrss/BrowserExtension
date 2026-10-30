@@ -185,6 +185,11 @@ States: **idle** → **recording** ↔ **paused** → **stopped** (see `src/doma
 
 - Use **`npm.cmd`** / **`npx.cmd`** (not bare `npm`/`npx` if policy requires).
 - Chain with **`;`**, not `&&`.
+- Line endings: `.gitattributes` forces **LF** (`* text=auto eol=lf`) to match Prettier `endOfLine: lf`. Without it, `core.autocrlf=true` checks out CRLF and `format:check` fails on every file. Clones made before `.gitattributes` existed need a one-time LF re-checkout of the working tree.
+
+### Fresh clone
+
+- `postinstall` runs `scripts/build-console-bridge.mjs` before `wxt prepare`. The bridge file is gitignored; without it WXT omits `/content-scripts/console-bridge.js` from `ScriptPublicPath` and `typecheck` fails in `src/sessions/content-tab-bootstrap.ts`.
 
 ### Playwright browser install
 

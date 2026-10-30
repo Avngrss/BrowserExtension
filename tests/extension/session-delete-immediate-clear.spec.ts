@@ -3,7 +3,6 @@
 import { expect, test } from '@playwright/test';
 import {
   cleanupExtensionLaunch,
-  clickSidePanelControl,
   deleteSessionFromSummary,
   expectCapturingThisTab,
   launchExtension,
