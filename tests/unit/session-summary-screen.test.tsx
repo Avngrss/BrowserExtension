@@ -48,6 +48,7 @@ function renderSummary(
     uiIssues: [uiIssue('u1')],
     consoleIssues: [consoleIssue('c1')],
     networkIssues: [],
+    onGeneratePrompt: vi.fn(),
     onReviewIssues: vi.fn(),
     onSetBugStatus: vi.fn(),
     onStartNewCapture: vi.fn(),
@@ -120,13 +121,14 @@ describe('SessionSummaryScreen', () => {
     expect(card).toHaveTextContent('1 relevant Action');
     expect(card).toHaveTextContent('2 related issues');
     expect(card).toHaveTextContent('0 screenshots');
-    expect(
-      within(card).getByRole('button', { name: 'Generate prompt' }),
-    ).toBeDisabled();
-    expect(within(card).getByText('Coming next')).toBeInTheDocument();
+    expect(screen.queryByText('Coming next')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Session result')).not.toBeInTheDocument();
     expectRemovedReportUi();
 
+    await user.click(
+      within(card).getByRole('button', { name: 'Generate prompt' }),
+    );
+    expect(props.onGeneratePrompt).toHaveBeenCalledWith('bug-1');
     await user.click(within(card).getByRole('button', { name: 'Review' }));
     expect(props.onReviewIssues).toHaveBeenCalledOnce();
     await user.click(within(card).getByRole('button', { name: 'Exclude' }));
@@ -157,5 +159,15 @@ describe('SessionSummaryScreen', () => {
     expect(
       within(excluded).getByRole('button', { name: 'Include' }),
     ).toBeInTheDocument();
+    const excludedPrompt = within(excluded).getByRole('button', {
+      name: 'Generate prompt',
+    });
+    expect(excludedPrompt).toBeDisabled();
+    expect(excludedPrompt).toHaveAccessibleDescription(
+      'Include this bug to generate a prompt.',
+    );
+    expect(
+      within(manual).getByRole('button', { name: 'Generate prompt' }),
+    ).toBeEnabled();
   });
 });

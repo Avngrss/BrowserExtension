@@ -59,11 +59,18 @@ test('two unrelated issues in one session become two potential bugs', async () =
       'Diagnostics console error',
     );
     await expect(consoleBug).toContainText('1 related issue');
-    for (const card of [uiBug, consoleBug]) {
-      await expect(
-        card.getByRole('button', { name: 'Generate prompt' }),
-      ).toBeDisabled();
-    }
+    await uiBug.getByRole('button', { name: 'Generate prompt' }).click();
+    await expect(
+      sidePanel.getByRole('heading', { name: 'Steps for bug ticket' }),
+    ).toBeVisible();
+    const prompt = sidePanel.getByLabel('Generated prompt');
+    await expect(prompt).toHaveValue(/Diagnostics UI issue/);
+    await expect(prompt).toHaveValue(
+      /Steps \(captured browser actions, oldest first\):\n1\. /,
+    );
+    await expect(prompt).not.toHaveValue(/Diagnostics console error/);
+    await sidePanel.getByRole('button', { name: 'Back to summary' }).click();
+    await expect(cards).toHaveCount(2);
 
     await consoleBug.getByRole('button', { name: 'Exclude' }).click();
     await expect(
@@ -72,6 +79,9 @@ test('two unrelated issues in one session become two potential bugs', async () =
     await expect(
       consoleBug.getByRole('button', { name: 'Include' }),
     ).toBeVisible();
+    await expect(
+      consoleBug.getByRole('button', { name: 'Generate prompt' }),
+    ).toBeDisabled();
 
     await uiBug.getByRole('button', { name: 'Review' }).click();
     await expect(

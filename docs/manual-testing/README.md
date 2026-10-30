@@ -2,7 +2,7 @@
 
 Документы в этой папке — для **ручного QA** без чтения исходного кода. Подписи кнопок и экранов в шагах совпадают с **English** текстом в продукте.
 
-**Не описываем (не реализовано):** Export, Prompt Builder, LLM, webhook, Jira, YouTrack, история прошлых сессий. На **Session Summary** кнопка **Generate prompt** неактивна, подпись **Coming next**.
+**Не описываем (не реализовано):** Export (копирование и скачивание промпта), другие режимы Prompt Builder, LLM, webhook, Jira, YouTrack, история прошлых сессий. **Generate prompt** на карточке **Potential bug** открывает единственный режим **Steps for bug ticket** (см. SES-005).
 
 ## Сборка и загрузка extension
 

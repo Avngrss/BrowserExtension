@@ -11,7 +11,7 @@ Last verified against the repository implementation and test suite (not chat his
 - **Repository layout (high level):**
   - `entrypoints/` — WXT entrypoints: `background.ts`, `content.ts`, `sidepanel/`, `options/`, `collector-diagnostics/`
   - `src/` — domain models, collectors, stores, messaging, React UI, `potential-bugs/`, `screenshots/`, `bug-report/` (legacy report builders), `issue-marks/` (legacy mark store)
-  - `tests/unit/` — Vitest (77 files, 302 tests at last `npm run check`)
+  - `tests/unit/` — Vitest (79 files, 308 tests at last `npm run check`)
   - `tests/extension/` — Playwright against built `.output/chrome-mv3`
   - `tests/fixtures/collector-diagnostics.html` — deterministic collector triggers
   - `docs/manual-testing/` — Russian manual QA cases (English UI strings in steps)
@@ -52,7 +52,7 @@ The extension should stay **simple**, **local and transparent by default**, **fo
 
 **Intended primary flow (product direction):**
 
-`Start capture` → test normally → **Potential bugs captured automatically** → optionally **Capture bug now** → **Stop and review** → (future) **generate one prompt per bug**
+`Start capture` → test normally → **Potential bugs captured automatically** → optionally **Capture bug now** → **Stop and review** → **generate one prompt per bug** (first mode implemented)
 
 **Implemented today:**
 
@@ -62,9 +62,10 @@ The extension should stay **simple**, **local and transparent by default**, **fo
 4. Optional **Capture bug now** (note optional) during recording/pause.
 5. **Stop and review** → **Session Summary**:
    - **No bugs:** “Session completed”, “No potential bugs detected”, recorded Actions count, **View activity**, **Start new capture**, **Delete session**.
-   - **With bugs:** headline `N potential bugs captured` ( **included** bugs only ), one **Potential bug** card each: factual description, action/issue/screenshot counts, disabled **Generate prompt** (“Coming next”), **Review**, **Exclude** / **Include**.
-6. **Review** on a card opens shared **Issue Review** (all session issues, dispositions, screenshots)—not a per-bug filtered view.
-7. **Settings** (options page): capture toggles, privacy, limits, UI rules, screenshots, notifications.
+   - **With bugs:** headline `N potential bugs captured` ( **included** bugs only ), one **Potential bug** card each: factual description, action/issue/screenshot counts, **Generate prompt** (disabled on excluded cards with “Include this bug to generate a prompt.”), **Review**, **Exclude** / **Include**.
+6. **Generate prompt** on a card opens the **Steps for bug ticket** screen: a read-only **Generated prompt** for that one bug (click selects all for manual copy) and **Back to summary**. No Copy button or Export.
+7. **Review** on a card opens shared **Issue Review** (all session issues, dispositions, screenshots)—not a per-bug filtered view.
+8. **Settings** (options page): capture toggles, privacy, limits, UI rules, screenshots, notifications.
 
 **Not in UI:** session-level **Bug context** form, **Report scope**, **Bug report preview**, **Mark issue** (replaced by **Capture bug now**).
 
@@ -160,6 +161,7 @@ States: **idle** → **recording** ↔ **paused** → **stopped** (see `src/doma
 | **Capture**            | Start/pause/resume/stop, timeline, counts, **Capture bug now**    |
 | **Session Summary**    | Potential bug cards or empty session result; activity expansion   |
 | **Issue Review**       | Category tabs, include/exclude/expected, screenshot evidence      |
+| **Bug ticket prompt**  | **Steps for bug ticket** prompt for one Potential bug (read-only) |
 | **Settings / Options** | Collectors, privacy, limits, screenshots, notifications, UI rules |
 
 ---
@@ -170,7 +172,7 @@ States: **idle** → **recording** ↔ **paused** → **stopped** (see `src/doma
 
 - **`docs/manual-testing/README.md`** — build/load, two page types (Automation Exercise + collector diagnostics), run order.
 - Cases are **Russian**; UI strings in steps match **English** product copy.
-- Explicitly **not** documented as implemented: Export, Prompt Builder, LLM, webhooks, Jira/YouTube, past session history.
+- Explicitly **not** documented as implemented: Export, Prompt Builder modes other than **Steps for bug ticket**, LLM, webhooks, Jira/YouTube, past session history.
 
 ### Automated
 
@@ -242,7 +244,7 @@ Historically intermittent failures: side panel stuck idle, “Open an HTTP or HT
 **Current UX (implemented):**
 
 - Summary centered on **Potential bug cards** or a minimal **no bugs** result.
-- **Generate prompt** disabled with “Coming next”.
+- **Generate prompt** opens the **Steps for bug ticket** prompt for that card (see Prompt-first product direction).
 - Factual one-line descriptions via `buildPotentialBugDescription` (note → UI → console → network drafts in `src/bug-report/factual-what-happened-draft.ts`).
 
 **Legacy code still in repo (intentionally not deleted):**
@@ -251,7 +253,7 @@ Historically intermittent failures: side panel stuck idle, “Open an HTTP or HT
 - `src/bug-report/bug-report-context-*`, `src/issue-marks/*`, messaging handlers in `background-router.ts`
 - Orphan UI pieces: `SessionBugContextSection.tsx`, `ReportScopeChoices.tsx` (not mounted in `App.tsx`)
 
-Do **not** recommend deleting structured report code until Prompt Builder reuses or replaces it deliberately.
+Do **not** recommend deleting structured report code until Prompt Builder reuses or replaces it deliberately. The prompt already reuses `describeUiIssue` and `report-technical-evidence.ts` formatters; `build-session-report-preview.ts` itself is still unused by the UI.
 
 ---
 
@@ -288,10 +290,16 @@ Do **not** recommend deleting structured report code until Prompt Builder reuses
 
 ## Prompt-first product direction
 
+**Implemented (first slice):**
+
+- Mode **Steps for bug ticket** — `buildStepsForBugTicketPrompt` in `src/prompt/steps-for-bug-ticket-prompt.ts`; screen `PotentialBugPromptScreen.tsx`; side panel view `prompt` in `useSidePanelView`.
+- Prompt = English instructions (evidence only, no invented expected result or root cause, missing evidence → “Not captured”, expected result → tester note or “To be confirmed by the tester”) + **Captured evidence**: sanitized page URL/title, detection time (UTC ISO), automatic/manual source, tester note, the bug’s refined steps, its linked issues (dispositions: `excluded` skipped, `expected` marked `[Expected]`), screenshot count (images are not embedded).
+- Built in the side panel from data it already has; no messaging, storage, or permission changes.
+
 **Planned (not implemented):**
 
-- **Prompt Builder** — one prompt **per Potential bug** (card button today is disabled).
-- **Export** — copy/download prompt or structured bundle.
+- **Export** — copy/download prompt or structured bundle (no Copy button yet).
+- Additional prompt modes — only after the first mode is proven useful on real captures.
 - Optional future integrations (Jira, webhooks, LLM providers) — **out of scope** until prompt quality is validated.
 
 **Principles for prompts:**
@@ -304,8 +312,8 @@ Do **not** recommend deleting structured report code until Prompt Builder reuses
 ## Immediate next priorities
 
 1. **Reconcile this file with the repo** after any drift (next AI session step zero).
-2. **Feature acceptance for Potential bugs** — focused manual pass (see continuation workflow below); do not start Prompt Builder until the user confirms.
-3. **Prompt Builder (smallest first slice)** — mode **Steps for bug ticket** for **one** selected Potential bug; enable **Generate prompt** on that path only; no Export yet.
+2. **Manual acceptance of Potential bugs + Steps for bug ticket** — SES-005 steps 1b–1g and end-to-end scenario step 4a in `docs/manual-testing/`.
+3. **Validate prompt quality on real captures** (e.g. Automation Exercise) — paste prompts into an AI assistant / tracker; fix only what materially affects usefulness. Export (Copy) only after this.
 4. Keep Summary **card-centric**; resist re-expanding session-level forms on the primary screen.
 
 Playwright lifecycle specs use **`startRecordingOnPage`** / **`clickSidePanelControl`** (full extension suite was green at last run).
@@ -385,7 +393,7 @@ Every AI session that **implements** product or test behavior must follow this c
 
 1. Stabilize automatic Potential bug creation, grouping, persistence, and repeated session lifecycle.
 2. Validate Potential bug cards via focused automated and manual tests.
-3. Implement the **first Prompt Builder mode** for one selected Potential bug: **Steps for bug ticket**.
+3. Implement the **first Prompt Builder mode** for one selected Potential bug: **Steps for bug ticket** — **done** (pending manual acceptance).
 4. Validate prompt quality on real captured examples; improve only what materially affects usefulness.
 5. Consider additional prompt modes only after the first mode is proven valuable.
 6. Implement **Export** only after useful report/prompt structure is validated.
@@ -434,13 +442,13 @@ Manual smoke: `docs/manual-testing/smoke-checklist.md`.
 2. Run **`npm run check`**; note any failures.
 3. **Compare** Summary UI, Potential bug stores, and tests to this document; **report inconsistencies** to the user.
 4. **Analyze** `src/potential-bugs/*`, `SessionSummaryScreen.tsx`, and `entrypoints/background.ts` (`dispatchNewUniqueIssue`, `clearSessionArtifacts`).
-5. **Propose the smallest safe next task** (likely Prompt Builder slice or Playwright lifecycle hardening)—**do not implement** until the user confirms.
+5. **Propose the smallest safe next task** (likely prompt-quality fixes from real captures, then Export/Copy, or Playwright lifecycle hardening)—**do not implement** until the user confirms.
 
 ---
 
 ## Product direction to preserve
 
-- **Start capture → test normally → automatic Potential bugs → optional Capture bug now → Stop → one prompt per bug** (prompt step still ahead).
+- **Start capture → test normally → automatic Potential bugs → optional Capture bug now → Stop → one prompt per bug** (first mode, **Steps for bug ticket**, implemented; Export still ahead).
 - Main artifact = **`PotentialBug` records**, not a monolithic session report.
 - Keep evidence rich **internally** and in **Review**; keep **Summary** simple.
 - Central goal unchanged: **minimum tester effort, maximum useful context** for fast, high-quality bug reports.

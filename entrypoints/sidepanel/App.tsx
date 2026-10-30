@@ -8,6 +8,7 @@ import {
 import { Button } from '@/src/components/Button';
 import { CaptureScreen } from '@/src/components/CaptureScreen';
 import { IssueReviewScreen } from '@/src/components/IssueReviewScreen';
+import { PotentialBugPromptScreen } from '@/src/components/PotentialBugPromptScreen';
 import { SessionSummaryScreen } from '@/src/components/SessionSummaryScreen';
 import type {
   IssueDisposition,
@@ -49,10 +50,8 @@ export function App() {
     snapshot: session.snapshot,
     status: session.status,
   });
-  const { view, openReview, backToSummary } = useSidePanelView(
-    session.status,
-    session.loading,
-  );
+  const { view, promptBugId, openReview, openPrompt, backToSummary } =
+    useSidePanelView(session.status, session.loading);
 
   const actionList = useActionList();
   const consoleIssueList = useConsoleIssueList();
@@ -308,6 +307,7 @@ export function App() {
           consoleIssues={consoleIssueList.issues}
           networkIssues={networkIssueList.issues}
           screenshotEvidence={screenshotEvidence.evidence}
+          onGeneratePrompt={openPrompt}
           onReviewIssues={openReview}
           onSetBugStatus={(bugId, status) => {
             void setPotentialBugStatus(bugId, status);
@@ -336,6 +336,18 @@ export function App() {
                 }
               : undefined
           }
+        />
+      ) : null}
+
+      {view === 'prompt' ? (
+        <PotentialBugPromptScreen
+          potentialBugs={sessionPotentialBugs}
+          bugId={promptBugId}
+          uiIssues={uiIssueList.issues}
+          consoleIssues={consoleIssueList.issues}
+          networkIssues={networkIssueList.issues}
+          screenshotEvidence={screenshotEvidence.evidence}
+          onBack={backToSummary}
         />
       ) : null}
 

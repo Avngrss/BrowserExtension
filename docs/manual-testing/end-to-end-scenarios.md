@@ -92,7 +92,11 @@
 
 4. **Stop and review** (кнопка в блоке **Bug captured** или основная).
 
-   **Ожидаемый результат:** **2 potential bugs captured**; две карточки **Captured manually**; у первой **Factual description** — текст заметки, у второй — первый недавний issue или **Captured manually on <путь>.** (без догадок о причине); у каждой relevant Actions не больше 5 и без **Clicked a button.**; **1 screenshot**, если захват шёл во время записи; **Generate prompt** disabled. Нет **Report scope**, **Bug context** и **Bug report preview**.
+   **Ожидаемый результат:** **2 potential bugs captured**; две карточки **Captured manually**; у первой **Factual description** — текст заметки, у второй — первый недавний issue или **Captured manually on <путь>.** (без догадок о причине); у каждой relevant Actions не больше 5 и без **Clicked a button.**; **1 screenshot**, если захват шёл во время записи; **Generate prompt** активна. Нет **Report scope**, **Bug context** и **Bug report preview**.
+
+4a. **Generate prompt** на карточке с заметкой.
+
+**Ожидаемый результат:** экран **Steps for bug ticket**; в **Generated prompt** строка **Detection: Captured manually by the tester** и текст заметки после **Tester note:**. **Back to summary** возвращает на **Session Summary**.
 
 5. **Start new capture** → подтвердите без F5 на web-странице.
 

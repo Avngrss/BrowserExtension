@@ -3,12 +3,14 @@ import type {
   PotentialBug,
   PotentialBugStatus,
 } from '@/src/domain/potential-bug';
+import { potentialBugTitle } from '@/src/potential-bugs/potential-bug-description';
 
 type PotentialBugCardProps = {
   bug: PotentialBug;
   index: number;
   description: string;
   screenshotCount: number;
+  onGeneratePrompt: () => void;
   onReview: () => void;
   onSetStatus: (status: PotentialBugStatus) => void;
 };
@@ -22,6 +24,7 @@ export function PotentialBugCard({
   index,
   description,
   screenshotCount,
+  onGeneratePrompt,
   onReview,
   onSetStatus,
 }: PotentialBugCardProps) {
@@ -39,7 +42,7 @@ export function PotentialBugCard({
     >
       <div className="flex min-w-0 items-baseline justify-between gap-2">
         <h3 className="min-w-0 truncate text-sm font-semibold text-slate-950 dark:text-slate-50">
-          {bug.source === 'manual' ? 'Captured manually' : `Bug ${index + 1}`}
+          {potentialBugTitle(bug, index)}
         </h3>
         <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">
           {excluded ? 'Excluded' : bug.page.pathname}
@@ -57,12 +60,19 @@ export function PotentialBugCard({
         <li>{countLabel(screenshotCount, 'screenshot')}</li>
       </ul>
       <div className="flex min-w-0 flex-col gap-2">
-        <Button type="button" disabled aria-describedby={hintId}>
+        <Button
+          type="button"
+          disabled={excluded}
+          aria-describedby={excluded ? hintId : undefined}
+          onClick={onGeneratePrompt}
+        >
           Generate prompt
         </Button>
-        <p id={hintId} className="text-xs text-slate-500 dark:text-slate-400">
-          Coming next
-        </p>
+        {excluded ? (
+          <p id={hintId} className="text-xs text-slate-500 dark:text-slate-400">
+            Include this bug to generate a prompt.
+          </p>
+        ) : null}
         <div className="grid min-w-0 grid-cols-2 gap-2">
           <Button type="button" variant="secondary" onClick={onReview}>
             Review

@@ -150,7 +150,7 @@
 
 1b. Новая сессия: **Create action event** → **Create UI issue**, подождите больше 3 с → **Create console error** → **Stop and review**.
 
-**Ожидаемый результат:** заголовок **2 potential bugs captured**; две карточки **Potential bug 1** и **Potential bug 2**. В каждой — **Factual description** только из фактов (первая: **The page displayed “Diagnostics UI issue”.**, вторая: **A JavaScript error was recorded: “Diagnostics console error”.**), счётчики relevant Actions (не больше 5) / related issues / screenshots; **Generate prompt** disabled и **Coming next**; **Review**; **Exclude**.
+**Ожидаемый результат:** заголовок **2 potential bugs captured**; две карточки **Potential bug 1** и **Potential bug 2**. В каждой — **Factual description** только из фактов (первая: **The page displayed “Diagnostics UI issue”.**, вторая: **A JavaScript error was recorded: “Diagnostics console error”.**), счётчики relevant Actions (не больше 5) / related issues / screenshots; активная **Generate prompt**; **Review**; **Exclude**. Подписи **Coming next** нет.
 
 1c. Повторно **Create UI issue** и **Create console error** в пределах 3 с от первого issue (до **Stop and review**).
 
@@ -158,11 +158,19 @@
 
 1d. **Exclude** на второй карточке.
 
-**Ожидаемый результат:** карточка помечена **Excluded**, кнопка **Include**; заголовок **1 potential bug captured**.
+**Ожидаемый результат:** карточка помечена **Excluded**, кнопка **Include**; заголовок **1 potential bug captured**; **Generate prompt** на этой карточке неактивна, под ней **Include this bug to generate a prompt.**
 
 1e. **Review** → **Back to summary**; затем закройте и снова откройте side panel.
 
 **Ожидаемый результат:** **Issue Review** открывается и возвращает на **Session Summary**; карточки и статус **Excluded** сохранены.
+
+1f. **Generate prompt** на первой карточке.
+
+**Ожидаемый результат:** экран **Steps for bug ticket**, под заголовком **Bug 1 · <путь страницы>**; поле **Generated prompt** только для чтения. В тексте: правила без выдуманного expected result и root cause; блок **Captured evidence:** с **Page URL**, **Detected at**, **Tester note:** → **Not captured**, шаги из relevant Actions этой карточки, **Observed problems** только с issues этой карточки (**Diagnostics UI issue**, без **Diagnostics console error**), **Screenshots: <N> captured**. Клик по полю выделяет весь текст; Ctrl+C и вставка в блокнот дают тот же текст.
+
+1g. **Back to summary**.
+
+**Ожидаемый результат:** **Session Summary** с теми же карточками и статусами.
 
 2. Наведите курсор на иконку extension.
 

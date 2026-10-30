@@ -35,6 +35,7 @@ type SessionSummaryScreenProps = {
   consoleIssues?: ConsoleIssue[];
   networkIssues?: NetworkIssue[];
   screenshotEvidence?: ScreenshotEvidence[];
+  onGeneratePrompt: (bugId: string) => void;
   onReviewIssues: () => void;
   onSetBugStatus: (bugId: string, status: PotentialBugStatus) => void;
   onStartNewCapture: () => void;
@@ -65,6 +66,7 @@ export function SessionSummaryScreen({
   consoleIssues = [],
   networkIssues = [],
   screenshotEvidence = [],
+  onGeneratePrompt,
   onReviewIssues,
   onSetBugStatus,
   onStartNewCapture,
@@ -205,6 +207,9 @@ export function SessionSummaryScreen({
                 bug,
                 screenshotEvidence,
               )}
+              onGeneratePrompt={() => {
+                onGeneratePrompt(bug.id);
+              }}
               onReview={onReviewIssues}
               onSetStatus={(status) => {
                 onSetBugStatus(bug.id, status);

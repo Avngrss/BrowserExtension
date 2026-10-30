@@ -25,6 +25,10 @@ function firstIssueId(
   return bug.issues.find((issue) => issue.category === category)?.issueId;
 }
 
+export function potentialBugTitle(bug: PotentialBug, index: number): string {
+  return bug.source === 'manual' ? 'Captured manually' : `Bug ${index + 1}`;
+}
+
 export function buildPotentialBugDescription(
   bug: PotentialBug,
   lookup: PotentialBugIssueLookup,
