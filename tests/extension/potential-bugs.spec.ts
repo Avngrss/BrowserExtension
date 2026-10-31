@@ -53,12 +53,12 @@ test('two unrelated issues in one session become two potential bugs', async () =
     await expect(uiBug.getByLabel('Factual description')).toContainText(
       'Diagnostics UI issue',
     );
-    await expect(uiBug).toContainText('1 related issue');
-    await expect(uiBug).not.toContainText('0 relevant Actions');
+    await expect(uiBug).not.toContainText('related issue');
+    await expect(uiBug).not.toContainText('relevant Action');
     await expect(consoleBug.getByLabel('Factual description')).toContainText(
       'Diagnostics console error',
     );
-    await expect(consoleBug).toContainText('1 related issue');
+    await expect(consoleBug).not.toContainText('related issue');
     await uiBug.getByRole('button', { name: 'Generate prompt' }).click();
     await expect(
       sidePanel.getByRole('heading', { name: 'Steps for bug ticket' }),
@@ -66,7 +66,7 @@ test('two unrelated issues in one session become two potential bugs', async () =
     const prompt = sidePanel.getByLabel('Generated prompt');
     await expect(prompt).toHaveValue(/Diagnostics UI issue/);
     await expect(prompt).toHaveValue(
-      /Steps \(captured browser actions, oldest first\):\n1\. /,
+      /Steps to reproduce \(oldest first\):\n1\. /,
     );
     await expect(prompt).not.toHaveValue(/Diagnostics console error/);
     await sidePanel.getByRole('button', { name: 'Back to summary' }).click();

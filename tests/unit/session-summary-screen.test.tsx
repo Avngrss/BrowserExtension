@@ -117,10 +117,9 @@ describe('SessionSummaryScreen', () => {
     const card = screen.getByRole('article', { name: 'Potential bug 1' });
     expect(
       within(card).getByLabelText('Factual description'),
-    ).toHaveTextContent('The page displayed “Payment unavailable”.');
-    expect(card).toHaveTextContent('1 relevant Action');
-    expect(card).toHaveTextContent('2 related issues');
-    expect(card).toHaveTextContent('0 screenshots');
+    ).toHaveTextContent('The page shows “Payment unavailable”.');
+    expect(card).not.toHaveTextContent('relevant Action');
+    expect(card).not.toHaveTextContent('related issue');
     expect(screen.queryByText('Coming next')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Session result')).not.toBeInTheDocument();
     expectRemovedReportUi();

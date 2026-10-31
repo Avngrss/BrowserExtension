@@ -51,11 +51,11 @@ describe('potential bug notifications', () => {
 
     service.notifyPotentialBugCreated({
       issueCategory: 'ui',
-      description: 'The page displayed “Payment unavailable”.',
+      description: 'The page shows “Payment unavailable”.',
     });
     service.notifyPotentialBugCreated({
       issueCategory: 'network',
-      description: 'POST /api/pay returned HTTP 500.',
+      description: 'The POST request to /api/pay fails with HTTP 500.',
     });
     await flush();
 
@@ -64,7 +64,7 @@ describe('potential bug notifications', () => {
       1,
       expect.objectContaining({
         title: POTENTIAL_BUG_NOTIFICATION_TITLE,
-        message: 'The page displayed “Payment unavailable”.',
+        message: 'The page shows “Payment unavailable”.',
       }),
     );
     service.dispose();
@@ -74,7 +74,7 @@ describe('potential bug notifications', () => {
     const { service, createNotification } = createService();
     service.notifyPotentialBugCreated({
       issueCategory: 'console',
-      description: 'A JavaScript error was recorded: “Boom”.',
+      description: 'The browser console shows an error: “Boom”.',
     });
     await flush();
     expect(createNotification).not.toHaveBeenCalled();

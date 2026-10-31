@@ -9,21 +9,15 @@ type PotentialBugCardProps = {
   bug: PotentialBug;
   index: number;
   description: string;
-  screenshotCount: number;
   onGeneratePrompt: () => void;
   onReview: () => void;
   onSetStatus: (status: PotentialBugStatus) => void;
 };
 
-function countLabel(count: number, noun: string): string {
-  return `${count} ${noun}${count === 1 ? '' : 's'}`;
-}
-
 export function PotentialBugCard({
   bug,
   index,
   description,
-  screenshotCount,
   onGeneratePrompt,
   onReview,
   onSetStatus,
@@ -54,11 +48,6 @@ export function PotentialBugCard({
       >
         {description}
       </p>
-      <ul className="flex min-w-0 flex-wrap gap-x-3 gap-y-1 text-xs text-slate-600 tabular-nums dark:text-slate-300">
-        <li>{countLabel(bug.actions.length, 'relevant Action')}</li>
-        <li>{countLabel(bug.issues.length, 'related issue')}</li>
-        <li>{countLabel(screenshotCount, 'screenshot')}</li>
-      </ul>
       <div className="flex min-w-0 flex-col gap-2">
         <Button
           type="button"

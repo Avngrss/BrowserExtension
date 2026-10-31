@@ -27,7 +27,13 @@ describe('options settings layout', () => {
         'The current tab is selected automatically when you start capture. No URL setup is required.',
       ),
     ).toBeInTheDocument();
-    expect(screen.queryByText('Prompt generation')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Bug ticket prompt' }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Extra instructions')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Reset to default' }),
+    ).toBeInTheDocument();
 
     const advanced = screen
       .getByText('Advanced UI issue rules')

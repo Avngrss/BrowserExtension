@@ -62,10 +62,10 @@ The extension should stay **simple**, **local and transparent by default**, **fo
 4. Optional **Capture bug now** (note optional) during recording/pause.
 5. **Stop and review** → **Session Summary**:
    - **No bugs:** “Session completed”, “No potential bugs detected”, recorded Actions count, **View activity**, **Start new capture**, **Delete session**.
-   - **With bugs:** headline `N potential bugs captured` ( **included** bugs only ), one **Potential bug** card each: factual description, action/issue/screenshot counts, **Generate prompt** (disabled on excluded cards with “Include this bug to generate a prompt.”), **Review**, **Exclude** / **Include**.
-6. **Generate prompt** on a card opens the **Steps for bug ticket** screen: a read-only **Generated prompt** for that one bug (click selects all for manual copy) and **Back to summary**. No Copy button or Export.
+   - **With bugs:** headline `N potential bugs captured` ( **included** bugs only ), one **Potential bug** card each: factual description, **Generate prompt** (disabled on excluded cards with “Include this bug to generate a prompt.”), **Review**, **Exclude** / **Include**.
+6. **Generate prompt** on a card opens the **Steps for bug ticket** screen: a read-only **Generated prompt** for that one bug, **Copy prompt**, and **Back to summary**.
 7. **Review** on a card opens shared **Issue Review** (all session issues, dispositions, screenshots)—not a per-bug filtered view.
-8. **Settings** (options page): capture toggles, privacy, limits, UI rules, screenshots, notifications.
+8. **Settings** (options page): capture toggles, privacy, limits, UI rules, screenshots, notifications, extra bug-ticket prompt instructions.
 
 **Not in UI:** session-level **Bug context** form, **Report scope**, **Bug report preview**, **Mark issue** (replaced by **Capture bug now**).
 
@@ -293,19 +293,21 @@ Do **not** recommend deleting structured report code until Prompt Builder reuses
 **Implemented (first slice):**
 
 - Mode **Steps for bug ticket** — `buildStepsForBugTicketPrompt` in `src/prompt/steps-for-bug-ticket-prompt.ts`; screen `PotentialBugPromptScreen.tsx`; side panel view `prompt` in `useSidePanelView`.
-- Prompt = English instructions (evidence only, no invented expected result or root cause, missing evidence → “Not captured”, expected result → tester note or “To be confirmed by the tester”) + **Captured evidence**: sanitized page URL/title, detection time (UTC ISO), automatic/manual source, tester note, the bug’s refined steps, its linked issues (dispositions: `excluded` skipped, `expected` marked `[Expected]`), screenshot count (images are not embedded).
-- Built in the side panel from data it already has; no messaging, storage, or permission changes.
+- Prompt = one Senior QA agent + a **writing lens** from the primary symptom (`ui` / `console` / `network` / `mixed` / `observation`). Ticket shape stays Title / Description / Steps / Actual / Expected / Severity / Priority / Labels / Environment. Evidence is typed (UI / Console / Network blocks); Related signals are correlation only and cannot become Title or Actual. Network signals include HTTP 4xx/5xx and transport failures; analytics HTTP 200 is omitted. Optional Settings extra instructions. No Evidence section.
+- Built in the side panel from stored settings + data it already has; no extra permissions.
+- **Copy prompt** copies the generated text to the clipboard.
+- **Settings → Bug ticket prompt**: optional extra instructions (empty = default); **Reset to default**.
 
 **Planned (not implemented):**
 
-- **Export** — copy/download prompt or structured bundle (no Copy button yet).
+- Download/export of a structured bundle (file).
 - Additional prompt modes — only after the first mode is proven useful on real captures.
 - Optional future integrations (Jira, webhooks, LLM providers) — **out of scope** until prompt quality is validated.
 
 **Principles for prompts:**
 
 - Safe, **evidence-only** facts; steps from refined actions; technical evidence from linked issues and screenshots.
-- No invented expected behavior or root cause unless the tester explicitly provided a note.
+- No invented root cause or extra UI. Expected Result comes from the tester note, or one conservative inverse of the actual result (the captured error/message/failure should not occur).
 
 ---
 
@@ -313,7 +315,7 @@ Do **not** recommend deleting structured report code until Prompt Builder reuses
 
 1. **Reconcile this file with the repo** after any drift (next AI session step zero).
 2. **Manual acceptance of Potential bugs + Steps for bug ticket** — checklist in `docs/manual-testing/acceptance.md`: SES-005 steps 1b–1g, E2E-002 (prompt follows Review dispositions), E2E-004 step 4a.
-3. **Validate prompt quality on real captures** — E2E-006 (Automation Exercise → prompt → AI assistant, list of manual ticket edits); fix only what materially affects usefulness. Export (Copy) only after this.
+3. **Validate prompt quality on real captures** — E2E-006 (Automation Exercise → Copy prompt → AI assistant, list of manual ticket edits); fix only what materially affects usefulness.
 4. Keep Summary **card-centric**; resist re-expanding session-level forms on the primary screen.
 
 Playwright lifecycle specs use **`startRecordingOnPage`** / **`clickSidePanelControl`** (full extension suite was green at last run).
@@ -322,7 +324,7 @@ Playwright lifecycle specs use **`startRecordingOnPage`** / **`clickSidePanelCon
 
 ## Explicitly postponed features
 
-- Export to file / clipboard (beyond ad-hoc dev tools)
+- Export prompt or session as a file
 - Third-party integrations (Jira, YouTrack, webhooks)
 - In-extension LLM calls
 - Multi-tab simultaneous capture
@@ -396,7 +398,7 @@ Every AI session that **implements** product or test behavior must follow this c
 3. Implement the **first Prompt Builder mode** for one selected Potential bug: **Steps for bug ticket** — **done** (pending manual acceptance).
 4. Validate prompt quality on real captured examples; improve only what materially affects usefulness.
 5. Consider additional prompt modes only after the first mode is proven valuable.
-6. Implement **Export** only after useful report/prompt structure is validated.
+6. **Copy prompt** is implemented; file export remains postponed.
 7. Full manual regression near MVP completion.
 8. Integrations, manual visual-bug capture, extra collectors, session history — **only after** core MVP is stable.
 

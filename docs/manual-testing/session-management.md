@@ -150,7 +150,7 @@
 
 1b. Новая сессия: **Create action event** → **Create UI issue**, подождите больше 3 с → **Create console error** → **Stop and review**.
 
-**Ожидаемый результат:** заголовок **2 potential bugs captured**; две карточки **Potential bug 1** и **Potential bug 2**. В каждой — **Factual description** только из фактов (первая: **The page displayed “Diagnostics UI issue”.**, вторая: **A JavaScript error was recorded: “Diagnostics console error”.**), счётчики relevant Actions (не больше 5) / related issues / screenshots; активная **Generate prompt**; **Review**; **Exclude**. Подписи **Coming next** нет.
+**Ожидаемый результат:** заголовок **2 potential bugs captured**; две карточки **Potential bug 1** и **Potential bug 2**. В каждой — **Factual description** только из фактов (первая: **The page shows “Diagnostics UI issue”.**, вторая: **The browser console shows an error: “Diagnostics console error”.**); активная **Generate prompt**; **Review**; **Exclude**. Счётчиков relevant Actions / related issues / screenshots нет. Подписи **Coming next** нет.
 
 1c. Повторно **Create UI issue** и **Create console error** в пределах 3 с от первого issue (до **Stop and review**).
 
@@ -166,7 +166,7 @@
 
 1f. **Generate prompt** на первой карточке.
 
-**Ожидаемый результат:** экран **Steps for bug ticket**, под заголовком **Bug 1 · <путь страницы>**; поле **Generated prompt** только для чтения. В тексте: правила без выдуманного expected result и root cause; блок **Captured evidence:** с **Page URL**, **Detected at**, **Tester note:** → **Not captured**, шаги из relevant Actions этой карточки, **Observed problems** только с issues этой карточки (**Diagnostics UI issue**, без **Diagnostics console error**), **Screenshots: <N> captured**. Клик по полю выделяет весь текст; Ctrl+C и вставка в блокнот дают тот же текст.
+**Ожидаемый результат:** экран **Steps for bug ticket**, под заголовком **Bug 1 · <путь страницы>**; поле **Generated prompt** только для чтения; кнопка **Copy prompt**. В тексте: **WRITING LENS (ui)**; правила без выдуманного expected result и root cause; блок **Captured evidence:** с **Page URL**, **Tester note** → **Not captured**, шаги этой карточки, **Primary symptom** / **Actual result** / **UI evidence** с **Diagnostics UI issue**, без **Diagnostics console error**. **Copy prompt** копирует тот же текст (notice **Copied.**); клик по полю выделяет весь текст.
 
 1g. **Back to summary**.
 

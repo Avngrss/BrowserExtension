@@ -8,9 +8,11 @@ import type { NetworkIssue } from '@/src/domain/network-issue';
 import type {
   PotentialBug,
   PotentialBugIssueCategory,
+  PotentialBugIssueRef,
 } from '@/src/domain/potential-bug';
 import type { ScreenshotEvidence } from '@/src/domain/screenshot-evidence';
 import type { UiIssue } from '@/src/domain/ui-issue';
+import { isReportableNetworkIssue } from '@/src/bug-report/reportable-network-issue';
 
 export type PotentialBugIssueLookup = {
   uiIssues: UiIssue[];
@@ -18,11 +20,57 @@ export type PotentialBugIssueLookup = {
   networkIssues: NetworkIssue[];
 };
 
-function firstIssueId(
+function issueRef(
   bug: PotentialBug,
   category: PotentialBugIssueCategory,
-): string | undefined {
-  return bug.issues.find((issue) => issue.category === category)?.issueId;
+): PotentialBugIssueRef | undefined {
+  return bug.issues.find((issue) => issue.category === category);
+}
+
+function factualDraftForRef(
+  ref: PotentialBugIssueRef,
+  lookup: PotentialBugIssueLookup,
+): string | null {
+  switch (ref.category) {
+    case 'ui': {
+      const issue = lookup.uiIssues.find((item) => item.id === ref.issueId);
+      if (
+        issue === undefined ||
+        issue.disposition === 'excluded' ||
+        issue.disposition === 'expected'
+      ) {
+        return null;
+      }
+      return uiIssueFactualDraft(issue);
+    }
+    case 'console': {
+      const issue = lookup.consoleIssues.find(
+        (item) => item.id === ref.issueId,
+      );
+      if (
+        issue === undefined ||
+        issue.disposition === 'excluded' ||
+        issue.disposition === 'expected'
+      ) {
+        return null;
+      }
+      return consoleIssueFactualDraft(issue);
+    }
+    case 'network': {
+      const issue = lookup.networkIssues.find(
+        (item) => item.id === ref.issueId,
+      );
+      if (
+        issue === undefined ||
+        issue.disposition === 'excluded' ||
+        issue.disposition === 'expected' ||
+        !isReportableNetworkIssue(issue)
+      ) {
+        return null;
+      }
+      return networkIssueFactualDraft(issue);
+    }
+  }
 }
 
 export function potentialBugTitle(bug: PotentialBug, index: number): string {
@@ -38,26 +86,15 @@ export function buildPotentialBugDescription(
     return note;
   }
 
-  const uiId = firstIssueId(bug, 'ui');
-  const ui = lookup.uiIssues.find((issue) => issue.id === uiId);
-  if (ui !== undefined) {
-    return uiIssueFactualDraft(ui);
-  }
-
-  const consoleId = firstIssueId(bug, 'console');
-  const consoleIssue = lookup.consoleIssues.find(
-    (issue) => issue.id === consoleId,
-  );
-  if (consoleIssue !== undefined) {
-    return consoleIssueFactualDraft(consoleIssue);
-  }
-
-  const networkId = firstIssueId(bug, 'network');
-  const networkIssue = lookup.networkIssues.find(
-    (issue) => issue.id === networkId,
-  );
-  if (networkIssue !== undefined) {
-    return networkIssueFactualDraft(networkIssue);
+  for (const category of ['ui', 'console', 'network'] as const) {
+    const ref = issueRef(bug, category);
+    if (ref === undefined) {
+      continue;
+    }
+    const draft = factualDraftForRef(ref, lookup);
+    if (draft !== null) {
+      return draft;
+    }
   }
 
   return bug.source === 'manual'

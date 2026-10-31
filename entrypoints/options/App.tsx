@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useState, type ReactElement } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactElement,
+} from 'react';
 import { CollapsibleSection } from '@/src/components/CollapsibleSection';
 import { SectionCard } from '@/src/components/SectionCard';
 import { UiIssueRulesPanel } from '@/src/components/UiIssueRulesPanel';
@@ -98,6 +104,17 @@ export function App() {
   );
   const [errors, setErrors] = useState<SettingsFieldErrors>({});
   const [savedNotice, setSavedNotice] = useState<string | undefined>(undefined);
+  const promptSaveTimer = useRef<number | undefined>(undefined);
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
+
+  useEffect(() => {
+    return () => {
+      if (promptSaveTimer.current !== undefined) {
+        window.clearTimeout(promptSaveTimer.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     void browser.runtime
@@ -125,6 +142,25 @@ export function App() {
     setSettings(next);
     await writeExtensionSettingsToStorage(next);
     setSavedNotice('Settings saved.');
+  }, []);
+
+  const persistPromptInstructions = useCallback((value: string) => {
+    const next: ExtensionSettings = {
+      ...settingsRef.current,
+      prompt: { extraInstructions: value },
+    };
+    const fieldErrors = validateExtensionSettings(next);
+    setErrors(fieldErrors);
+    setSettings(next);
+    if (Object.keys(fieldErrors).length > 0) {
+      return;
+    }
+    window.clearTimeout(promptSaveTimer.current);
+    promptSaveTimer.current = window.setTimeout(() => {
+      void writeExtensionSettingsToStorage(next).then(() => {
+        setSavedNotice('Settings saved.');
+      });
+    }, 400);
   }, []);
 
   return (
@@ -379,6 +415,49 @@ export function App() {
               disabled
               onChange={() => undefined}
             />
+          </div>
+        </SectionCard>
+
+        <SectionCard
+          title="Bug ticket prompt"
+          description="Optional extra instructions are added to Generate prompt. Built-in evidence-only rules still apply. Leave empty to use the default."
+        >
+          <div className="flex flex-col gap-3">
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="text-slate-800 dark:text-slate-100">
+                Extra instructions
+              </span>
+              <textarea
+                aria-label="Extra instructions"
+                rows={6}
+                maxLength={4000}
+                value={settings.prompt.extraInstructions}
+                className="rounded border border-slate-300 px-2 py-1 font-mono text-xs dark:border-slate-600 dark:bg-slate-900"
+                onChange={(event) => {
+                  persistPromptInstructions(event.target.value);
+                }}
+              />
+              {errors.promptExtraInstructions !== undefined ? (
+                <span
+                  role="alert"
+                  className="text-xs text-red-700 dark:text-red-300"
+                >
+                  {errors.promptExtraInstructions}
+                </span>
+              ) : null}
+            </label>
+            <button
+              type="button"
+              className="self-start text-sm text-teal-800 underline dark:text-teal-300"
+              onClick={() => {
+                void persist({
+                  ...settings,
+                  prompt: { extraInstructions: '' },
+                });
+              }}
+            >
+              Reset to default
+            </button>
           </div>
         </SectionCard>
 

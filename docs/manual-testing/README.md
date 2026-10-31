@@ -2,7 +2,7 @@
 
 Документы в этой папке — для **ручного QA** без чтения исходного кода. Подписи кнопок и экранов в шагах совпадают с **English** текстом в продукте.
 
-**Не описываем (не реализовано):** Export (копирование и скачивание промпта), другие режимы Prompt Builder, LLM, webhook, Jira, YouTrack, история прошлых сессий. **Generate prompt** на карточке **Potential bug** открывает единственный режим **Steps for bug ticket** (см. SES-005).
+**Не описываем (не реализовано):** скачивание промпта файлом, другие режимы Prompt Builder, LLM, webhook, Jira, YouTrack, история прошлых сессий. **Generate prompt** на карточке **Potential bug** открывает единственный режим **Steps for bug ticket** с кнопкой **Copy prompt** (см. SES-005). Extra instructions — **Settings** → **Bug ticket prompt**.
 
 **Приёмка текущего этапа:** [acceptance.md](./acceptance.md) — подготовка с нуля, какие кейсы пройти и что записать.
 

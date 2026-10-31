@@ -36,12 +36,17 @@ export type IssueNotificationSettings = {
   networkIssues: boolean;
 };
 
+export type PromptSettings = {
+  extraInstructions: string;
+};
+
 export type ExtensionSettings = {
   capture: CaptureCollectorSettings;
   privacy: PrivacySettings;
   limits: SessionLimitSettings;
   screenshots: ScreenshotEvidenceSettings;
   notifications: IssueNotificationSettings;
+  prompt: PromptSettings;
 };
 
 export const DEFAULT_CAPTURE_COLLECTOR_SETTINGS: CaptureCollectorSettings = {
@@ -81,12 +86,19 @@ export const DEFAULT_ISSUE_NOTIFICATION_SETTINGS: IssueNotificationSettings = {
   networkIssues: true,
 };
 
+export const DEFAULT_PROMPT_SETTINGS: PromptSettings = {
+  extraInstructions: '',
+};
+
+export const PROMPT_EXTRA_INSTRUCTIONS_MAX_LENGTH = 4_000;
+
 export const DEFAULT_EXTENSION_SETTINGS: ExtensionSettings = {
   capture: DEFAULT_CAPTURE_COLLECTOR_SETTINGS,
   privacy: DEFAULT_PRIVACY_SETTINGS,
   limits: DEFAULT_SESSION_LIMIT_SETTINGS,
   screenshots: DEFAULT_SCREENSHOT_EVIDENCE_SETTINGS,
   notifications: DEFAULT_ISSUE_NOTIFICATION_SETTINGS,
+  prompt: DEFAULT_PROMPT_SETTINGS,
 };
 
 export const LIMIT_MIN = 10;
@@ -100,7 +112,8 @@ export type SettingsFieldErrors = Partial<
     | 'maxUniqueUiIssues'
     | 'maxUniqueConsoleIssues'
     | 'maxUniqueNetworkIssues'
-    | 'maxScreenshotsPerSession',
+    | 'maxScreenshotsPerSession'
+    | 'promptExtraInstructions',
     string
   >
 >;
@@ -130,6 +143,15 @@ export function validateSessionLimit(
   return undefined;
 }
 
+export function validatePromptExtraInstructions(
+  value: string,
+): string | undefined {
+  if (value.length > PROMPT_EXTRA_INSTRUCTIONS_MAX_LENGTH) {
+    return `Extra prompt instructions must be at most ${PROMPT_EXTRA_INSTRUCTIONS_MAX_LENGTH} characters.`;
+  }
+  return undefined;
+}
+
 export function validateExtensionSettings(
   value: ExtensionSettings,
 ): SettingsFieldErrors {
@@ -153,6 +175,12 @@ export function validateExtensionSettings(
   if (screenshotMax !== undefined) {
     errors.maxScreenshotsPerSession = screenshotMax;
   }
+  const promptError = validatePromptExtraInstructions(
+    value.prompt.extraInstructions,
+  );
+  if (promptError !== undefined) {
+    errors.promptExtraInstructions = promptError;
+  }
   return errors;
 }
 
@@ -170,6 +198,13 @@ function parseLimit(value: unknown, fallback: number): number {
     : fallback;
 }
 
+function parsePromptExtraInstructions(value: unknown): string {
+  if (typeof value !== 'string') {
+    return DEFAULT_PROMPT_SETTINGS.extraInstructions;
+  }
+  return value.slice(0, PROMPT_EXTRA_INSTRUCTIONS_MAX_LENGTH);
+}
+
 export function parseExtensionSettings(raw: unknown): ExtensionSettings {
   if (!isRecord(raw)) {
     return DEFAULT_EXTENSION_SETTINGS;
@@ -180,6 +215,7 @@ export function parseExtensionSettings(raw: unknown): ExtensionSettings {
   const limitsRaw = isRecord(raw.limits) ? raw.limits : {};
   const screenshotsRaw = isRecord(raw.screenshots) ? raw.screenshots : {};
   const notificationsRaw = isRecord(raw.notifications) ? raw.notifications : {};
+  const promptRaw = isRecord(raw.prompt) ? raw.prompt : {};
 
   const settings: ExtensionSettings = {
     capture: {
@@ -268,6 +304,11 @@ export function parseExtensionSettings(raw: unknown): ExtensionSettings {
       networkIssues: parseBoolean(
         notificationsRaw.networkIssues,
         DEFAULT_ISSUE_NOTIFICATION_SETTINGS.networkIssues,
+      ),
+    },
+    prompt: {
+      extraInstructions: parsePromptExtraInstructions(
+        promptRaw.extraInstructions,
       ),
     },
   };

@@ -1,4 +1,4 @@
-import { useMemo, type SyntheticEvent } from 'react';
+import { useMemo, useState, type SyntheticEvent } from 'react';
 import { Button } from '@/src/components/Button';
 import type { ConsoleIssue } from '@/src/domain/console-issue';
 import type { NetworkIssue } from '@/src/domain/network-issue';
@@ -21,6 +21,7 @@ type PotentialBugPromptScreenProps = {
   consoleIssues: ConsoleIssue[];
   networkIssues: NetworkIssue[];
   screenshotEvidence: ScreenshotEvidence[];
+  extraInstructions: string;
   onBack: () => void;
 };
 
@@ -38,8 +39,12 @@ export function PotentialBugPromptScreen({
   consoleIssues,
   networkIssues,
   screenshotEvidence,
+  extraInstructions,
   onBack,
 }: PotentialBugPromptScreenProps) {
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'failed'>(
+    'idle',
+  );
   const index = potentialBugs.findIndex((bug) => bug.id === bugId);
   const bug = index === -1 ? undefined : potentialBugs[index];
 
@@ -51,9 +56,26 @@ export function PotentialBugPromptScreen({
             bug,
             { uiIssues, consoleIssues, networkIssues },
             countPotentialBugScreenshots(bug, screenshotEvidence),
+            extraInstructions,
           ),
-    [bug, uiIssues, consoleIssues, networkIssues, screenshotEvidence],
+    [
+      bug,
+      uiIssues,
+      consoleIssues,
+      networkIssues,
+      screenshotEvidence,
+      extraInstructions,
+    ],
   );
+
+  async function copyPrompt(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(prompt);
+      setCopyStatus('copied');
+    } catch {
+      setCopyStatus('failed');
+    }
+  }
 
   return (
     <section
@@ -86,10 +108,19 @@ export function PotentialBugPromptScreen({
             onFocus={selectWholePrompt}
             onClick={selectWholePrompt}
           />
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Click the prompt to select it, then copy it into an AI assistant or
-            issue tracker. It contains only captured facts.
-          </p>
+          <Button type="button" onClick={() => void copyPrompt()}>
+            Copy prompt
+          </Button>
+          {copyStatus === 'copied' ? (
+            <p className="text-xs text-slate-600 dark:text-slate-300">
+              Copied.
+            </p>
+          ) : null}
+          {copyStatus === 'failed' ? (
+            <p role="alert" className="text-xs text-red-700 dark:text-red-300">
+              Copy failed. Click the prompt and copy it from the keyboard.
+            </p>
+          ) : null}
         </>
       )}
     </section>

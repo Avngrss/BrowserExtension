@@ -71,7 +71,7 @@ describe('buildFactualWhatHappenedDraft', () => {
         consoleIssues: [],
         networkIssues: [],
       }),
-    ).toBe('The page displayed “Payment unavailable”.');
+    ).toBe('The page shows “Payment unavailable”.');
   });
 
   it('does not overwrite saved bug context', () => {

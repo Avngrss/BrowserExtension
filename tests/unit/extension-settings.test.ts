@@ -54,6 +54,27 @@ describe('extension settings', () => {
     expect(parsed.screenshots.maxPerSession).toBe(5);
   });
 
+  it('defaults extra prompt instructions to empty', () => {
+    expect(DEFAULT_EXTENSION_SETTINGS.prompt).toEqual({
+      extraInstructions: '',
+    });
+    expect(
+      parseExtensionSettings({
+        capture: DEFAULT_EXTENSION_SETTINGS.capture,
+      }).prompt.extraInstructions,
+    ).toBe('');
+  });
+
+  it('preserves extra prompt instructions when parsing storage', () => {
+    const parsed = parseExtensionSettings({
+      ...DEFAULT_EXTENSION_SETTINGS,
+      prompt: { extraInstructions: 'Write the ticket in Russian.' },
+    });
+    expect(parsed.prompt.extraInstructions).toBe(
+      'Write the ticket in Russian.',
+    );
+  });
+
   it('uses new category defaults only for missing screenshot fields', () => {
     const parsed = parseExtensionSettings({
       ...DEFAULT_EXTENSION_SETTINGS,

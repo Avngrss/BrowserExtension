@@ -31,25 +31,37 @@ function uiIssueDraft(issue: UiIssue): string {
   const message = issue.visibleMessage?.trim();
   if (message !== undefined && message.length > 0) {
     const safe = truncateCapturedText(message) ?? message;
-    return `The page displayed “${safe}”.`;
+    return `The page shows “${safe}”.`;
   }
   const ruleName = issue.ruleName.trim();
   if (ruleName.length > 0) {
-    return `The page displayed a UI alert from “${ruleName}”.`;
+    return `The page shows a UI alert from “${ruleName}”.`;
   }
-  return 'The page displayed a UI alert.';
+  return 'The page shows a UI alert.';
 }
 
 function consoleIssueDraft(issue: ConsoleIssue): string {
   const message = truncateCapturedText(issue.message) ?? issue.message.trim();
-  return `A JavaScript error was recorded: “${message}”.`;
+  return `The browser console shows an error: “${message}”.`;
 }
 
 function networkIssueDraft(issue: NetworkIssue): string {
   const path = formatActionTimelinePath(issue.url);
-  const status =
-    issue.status !== undefined ? ` returned HTTP ${issue.status}` : '';
-  return `${issue.method} ${path}${status}.`;
+  if (issue.status !== undefined && issue.status >= 400) {
+    return `The ${issue.method} request to ${path} fails with HTTP ${issue.status}.`;
+  }
+  const failure = issue.failureMessage?.trim();
+  if (failure !== undefined && failure.length > 0) {
+    const safe = truncateCapturedText(failure) ?? failure;
+    return `The ${issue.method} request to ${path} fails: “${safe}”.`;
+  }
+  if (issue.category === 'timeout') {
+    return `The ${issue.method} request to ${path} times out.`;
+  }
+  if (issue.category === 'aborted') {
+    return `The ${issue.method} request to ${path} is aborted.`;
+  }
+  return `The ${issue.method} request to ${path} fails.`;
 }
 
 export function buildFactualWhatHappenedDraft(input: {

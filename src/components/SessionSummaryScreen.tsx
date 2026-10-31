@@ -11,14 +11,10 @@ import type {
   PotentialBug,
   PotentialBugStatus,
 } from '@/src/domain/potential-bug';
-import type { ScreenshotEvidence } from '@/src/domain/screenshot-evidence';
 import { isActiveSession } from '@/src/domain/session';
 import type { UiIssue } from '@/src/domain/ui-issue';
 import type { UseSessionStateResult } from '@/src/hooks/useSessionState';
-import {
-  buildPotentialBugDescription,
-  countPotentialBugScreenshots,
-} from '@/src/potential-bugs/potential-bug-description';
+import { buildPotentialBugDescription } from '@/src/potential-bugs/potential-bug-description';
 import {
   formatSessionDuration,
   getSessionDurationMs,
@@ -34,7 +30,6 @@ type SessionSummaryScreenProps = {
   uiIssues?: UiIssue[];
   consoleIssues?: ConsoleIssue[];
   networkIssues?: NetworkIssue[];
-  screenshotEvidence?: ScreenshotEvidence[];
   onGeneratePrompt: (bugId: string) => void;
   onReviewIssues: () => void;
   onSetBugStatus: (bugId: string, status: PotentialBugStatus) => void;
@@ -65,7 +60,6 @@ export function SessionSummaryScreen({
   uiIssues = [],
   consoleIssues = [],
   networkIssues = [],
-  screenshotEvidence = [],
   onGeneratePrompt,
   onReviewIssues,
   onSetBugStatus,
@@ -203,10 +197,6 @@ export function SessionSummaryScreen({
               bug={bug}
               index={index}
               description={buildPotentialBugDescription(bug, issueLookup)}
-              screenshotCount={countPotentialBugScreenshots(
-                bug,
-                screenshotEvidence,
-              )}
               onGeneratePrompt={() => {
                 onGeneratePrompt(bug.id);
               }}

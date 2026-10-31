@@ -48,7 +48,7 @@
 
 3. **Back to summary** → **Generate prompt** на карточке **Potential bug 1**.
 
-   **Ожидаемый результат:** до нажатия — одна карточка (**1 potential bug captured**, **3 related issues**). Экран **Steps for bug ticket**; в **Observed problems** строки **UI error: Diagnostics UI issue** и **Console error: Diagnostics console error [Expected]**; строки с **/diagnostics-missing** нет; в правилах есть **Problems marked [Expected] were confirmed as expected behavior by the tester. Do not report them as defects.**
+   **Ожидаемый результат:** до нажатия — одна карточка (**1 potential bug captured**). Экран **Steps for bug ticket**; **WRITING LENS (mixed, primary: ui)**; **Primary symptom** / **Actual result** — **Diagnostics UI issue**; в **Related signals** — **Diagnostics console error [Expected]** (не UI); строки с **/diagnostics-missing** нет; в правилах есть **Signals marked [Expected] were confirmed as expected by the tester. Do not report them as defects.**
 
 ## E2E-003. Capture на diagnostics, работа на Automation Exercise
 
@@ -96,11 +96,11 @@
 
 4. **Stop and review** (кнопка в блоке **Bug captured** или основная).
 
-   **Ожидаемый результат:** **2 potential bugs captured**; две карточки **Captured manually**; у первой **Factual description** — текст заметки, у второй — первый недавний issue или **Captured manually on <путь>.** (без догадок о причине); у каждой relevant Actions не больше 5 и без **Clicked a button.**; **1 screenshot**, если захват шёл во время записи; **Generate prompt** активна. Нет **Report scope**, **Bug context** и **Bug report preview**.
+   **Ожидаемый результат:** **2 potential bugs captured**; две карточки **Captured manually**; у первой **Factual description** — текст заметки, у второй — первый недавний issue или **Captured manually on <путь>.** (без догадок о причине); **Generate prompt** активна. Нет **Report scope**, **Bug context** и **Bug report preview**.
 
 4a. **Generate prompt** на карточке с заметкой.
 
-**Ожидаемый результат:** экран **Steps for bug ticket**; в **Generated prompt** строка **Detection: Captured manually by the tester** и текст заметки после **Tester note:**. **Back to summary** возвращает на **Session Summary**.
+**Ожидаемый результат:** экран **Steps for bug ticket**; в **Generated prompt** **Capture type: manual** и текст заметки после **Tester note:**. Кнопка **Copy prompt**. **Back to summary** возвращает на **Session Summary**.
 
 5. **Start new capture** → подтвердите без F5 на web-странице.
 
@@ -154,11 +154,11 @@
 
 3. **Generate prompt** на этой карточке.
 
-   **Ожидаемый результат:** **Detection: Captured manually by the tester**; после **Tester note:** — заметка; **Page URL** — страница Contact us; в шагах — ваши действия в том же порядке, не больше 5; в тексте нет `bca-prompt@test.example` и `BCA prompt check`.
+   **Ожидаемый результат:** **Capture type: manual**; **WRITING LENS (observation)** если к карточке не привязан defect, иначе линза по Primary symptom; после **Tester note:** — заметка; **Page URL** — страница Contact us; в шагах — ваши действия в том же порядке, не больше 5; в тексте нет `bca-prompt@test.example` и `BCA prompt check`.
 
-4. Клик по полю → Ctrl+C → вставьте промпт в AI-ассистент.
+4. **Copy prompt** → вставьте промпт в AI-ассистент.
 
-   **Ожидаемый результат:** тикет с разделами **Title**, **Steps to reproduce**, **Actual result**, **Expected result**, **Environment**, **Evidence**. Шаги совпадают с вашими действиями, новых нет; **Expected result** взят из заметки; догадок о причине нет; где данных нет — **Not captured**.
+   **Ожидаемый результат:** notice **Copied.** Тикет как у QA: короткий **Title** (`[Feature] …`), живой **Description**, **Steps to Reproduce**, **Actual Result**, **Expected Result** (из заметки), **Severity**, **Priority**, **Labels**, **Environment**. Шаги совпадают с вашими действиями, новых нет; догадок о причине нет. Секции **Evidence** нет.
 
 5. Сравните тикет с тем, что вы завели бы сами.
 

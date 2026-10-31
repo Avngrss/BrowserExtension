@@ -40,19 +40,19 @@ describe('buildPotentialBugDescription', () => {
         potentialBug('b', { issues: allIssues }),
         lookup,
       ),
-    ).toBe('The page displayed “Payment unavailable”.');
+    ).toBe('The page shows “Payment unavailable”.');
     expect(
       buildPotentialBugDescription(
         potentialBug('b', { issues: allIssues.slice(0, 2) }),
         lookup,
       ),
-    ).toBe('A JavaScript error was recorded: “Boom”.');
+    ).toBe('The browser console shows an error: “Boom”.');
     expect(
       buildPotentialBugDescription(
         potentialBug('b', { issues: allIssues.slice(0, 1) }),
         lookup,
       ),
-    ).toBe('POST /api/pay returned HTTP 500.');
+    ).toBe('The POST request to /api/pay fails with HTTP 500.');
   });
 
   it('states only the capture fact for a manual bug without note or issues', () => {

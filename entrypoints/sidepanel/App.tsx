@@ -24,6 +24,7 @@ import { useSidePanelView } from '@/src/hooks/useSidePanelView';
 import { useUiIssueList } from '@/src/hooks/useUiIssueList';
 import { useScreenshotEvidence } from '@/src/hooks/useScreenshotEvidence';
 import { usePotentialBugs } from '@/src/hooks/usePotentialBugs';
+import { useExtensionSettings } from '@/src/hooks/useExtensionSettings';
 import { countPotentialIssues } from '@/src/sidepanel/session-display';
 import { sessionHasPreservedData } from '@/src/sessions/session-preserved-data';
 import { extensionBrowser } from '@/src/utils/browser-client';
@@ -59,6 +60,7 @@ export function App() {
   const uiIssueList = useUiIssueList();
   const screenshotEvidence = useScreenshotEvidence();
   const potentialBugList = usePotentialBugs();
+  const extensionSettings = useExtensionSettings();
   const sessionPotentialBugs = useMemo(
     () =>
       isActiveSession(session.snapshot)
@@ -306,7 +308,6 @@ export function App() {
           uiIssues={uiIssueList.issues}
           consoleIssues={consoleIssueList.issues}
           networkIssues={networkIssueList.issues}
-          screenshotEvidence={screenshotEvidence.evidence}
           onGeneratePrompt={openPrompt}
           onReviewIssues={openReview}
           onSetBugStatus={(bugId, status) => {
@@ -347,6 +348,7 @@ export function App() {
           consoleIssues={consoleIssueList.issues}
           networkIssues={networkIssueList.issues}
           screenshotEvidence={screenshotEvidence.evidence}
+          extraInstructions={extensionSettings.prompt.extraInstructions}
           onBack={backToSummary}
         />
       ) : null}
