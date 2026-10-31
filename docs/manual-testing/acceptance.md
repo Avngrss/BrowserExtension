@@ -1,6 +1,6 @@
-# Приёмка этапа: Generate prompt (Steps for bug ticket)
+# Приёмка этапа: Create ticket
 
-Памятка, чтобы принять текущий этап на своём компьютере и ничего не забыть. Принимаем кнопку **Generate prompt** на карточке **Potential bug** и экран **Steps for bug ticket**.
+Памятка для следующего круга фидбека. Принимаем кнопку **Create ticket** на карточке **Potential bug** и экран **Bug ticket**.
 
 ## 1. Подготовка (≈10 мин, один раз)
 
@@ -22,13 +22,11 @@ PowerShell не даёт запустить `npm` — пишите `npm.cmd`.
 
 Перед каждым кейсом — чистая сессия: на **Session Summary** нажмите **Delete session**.
 
-| №   | Кейс                                            | Страница                            | Что принимаем                                         |
-| --- | ----------------------------------------------- | ----------------------------------- | ----------------------------------------------------- |
-| 1   | [SES-005](./session-management.md), шаги 1b–1g  | diagnostics                         | карточки, Generate prompt, Copy prompt, Exclude, Back |
-| 2   | [E2E-002](./end-to-end-scenarios.md)            | diagnostics                         | промпт учитывает решения в Review                     |
-| 3   | [E2E-004](./end-to-end-scenarios.md), шаги 1–4a | diagnostics или Automation Exercise | ручной баг с заметкой в промпте                       |
-| 4   | [SET-006](./settings-privacy-limits.md)         | diagnostics                         | Extra instructions в Settings попадают в промпт       |
-| 5   | [E2E-006](./end-to-end-scenarios.md)            | Automation Exercise                 | тикет из промпта в AI-ассистенте — главная проверка   |
+| №   | Кейс                                           | Страница            | Что принимаем                                         |
+| --- | ---------------------------------------------- | ------------------- | ----------------------------------------------------- |
+| 1   | [SES-005](./session-management.md), шаги 1b–1g | diagnostics         | карточки, Create ticket, Copy ticket, Issues, Exclude |
+| 2   | [E2E-002](./end-to-end-scenarios.md)           | diagnostics         | тикет учитывает решения в Issues                      |
+| 3   | [E2E-006](./end-to-end-scenarios.md)           | Automation Exercise | черновик тикета с реального сайта                     |
 
 Промпт уходит в сторонний AI-ассистент: проверяйте только на тестовых страницах, без рабочих и личных данных.
 
@@ -46,6 +44,6 @@ PowerShell не даёт запустить `npm` — пишите `npm.cmd`.
 ## Если что-то не так
 
 - **Open an HTTP or HTTPS page tab…** при **Start capture** — активна не та вкладка: кликните по web-странице и повторите.
-- У **Generate prompt** подпись **Coming next** и кнопка неактивна — загружена старая сборка: обновите расширение в `chrome://extensions`.
+- У **Create ticket** подпись **Coming next** и кнопка неактивна — загружена старая сборка: обновите расширение в `chrome://extensions`.
 - `npm run diagnostics` пишет **Port 8765 is already in use** — сервер уже запущен в другом терминале.
 - `npm warn Unknown env config "devdir"` — не ошибка проекта, см. корневой [README.md](../../README.md).

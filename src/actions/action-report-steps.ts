@@ -4,17 +4,43 @@ import {
   describeElementKindForField,
   resolveActionElementLabel,
 } from '@/src/actions/action-report-element-label';
-import { formatActionTimelinePath } from '@/src/privacy/timeline-url';
+import {
+  formatActionTimelinePath,
+  looksLikeOpaqueId,
+} from '@/src/privacy/timeline-url';
 
 function pagePhraseFromPath(pathname: string): string {
-  const segment = pathname
+  const pathOnly = pathname.split('?')[0] ?? pathname;
+  const segments = pathOnly
     .replace(/^\/+|\/+$/g, '')
     .split('/')
-    .pop();
-  if (segment === undefined || segment.length === 0) {
+    .filter((part) => part.length > 0);
+  if (segments.length === 0) {
     return 'home';
   }
+  let segment = segments[segments.length - 1]!;
+  if (looksLikeOpaqueId(segment) && segments.length >= 2) {
+    segment = segments[segments.length - 2]!;
+  }
+  if (looksLikeOpaqueId(segment)) {
+    return 'page';
+  }
   return segment.replace(/[-_]+/g, ' ');
+}
+
+export function rewriteOpaqueNavigationStep(
+  step: string,
+  pagePathname: string,
+): string {
+  const match = /^Opened the (.+) page\.?$/.exec(step.trim());
+  const name = match?.[1];
+  if (name === undefined) {
+    return step;
+  }
+  if (!looksLikeOpaqueId(name.replace(/\s+/g, ''))) {
+    return step;
+  }
+  return `Opened the ${pagePhraseFromPath(pagePathname)} page.`;
 }
 
 export function describeActionReportStep(action: CapturedAction): string {

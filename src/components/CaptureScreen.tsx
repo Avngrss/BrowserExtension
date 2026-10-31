@@ -4,7 +4,6 @@ import { Button } from '@/src/components/Button';
 import { CompactStatPair } from '@/src/components/CompactStatPair';
 import { IssueCategoryCountsLine } from '@/src/components/IssueCategoryCountsLine';
 import { RecentActivityList } from '@/src/components/RecentActivityList';
-import { CaptureBugNowControls } from '@/src/components/CaptureBugNowControls';
 import { SessionControls } from '@/src/components/SessionControls';
 import {
   CAPTURE_START_FAILED_MESSAGE,
@@ -40,10 +39,6 @@ type CaptureScreenProps = {
   timelineEntries: TimelineEntry[];
   timelineError: string | undefined;
   timelineLoading: boolean;
-  captureBugEnabled: boolean;
-  onCaptureBug: (input: {
-    note?: string;
-  }) => Promise<{ ok: true } | { ok: false; message: string }>;
 };
 
 function phaseHeading(
@@ -84,8 +79,6 @@ export function CaptureScreen({
   timelineEntries,
   timelineError,
   timelineLoading,
-  captureBugEnabled,
-  onCaptureBug,
 }: CaptureScreenProps) {
   const tickerActive =
     session.status === 'recording' || session.status === 'paused';
@@ -209,16 +202,6 @@ export function CaptureScreen({
           void session.stop();
         }}
       />
-
-      {captureBugEnabled ? (
-        <CaptureBugNowControls
-          disabled={session.loading || session.processing || captureOnOtherTab}
-          onCapture={onCaptureBug}
-          onStop={() => {
-            void session.stop();
-          }}
-        />
-      ) : null}
 
       {session.processing ? (
         <p className="text-xs text-slate-600 dark:text-slate-300">

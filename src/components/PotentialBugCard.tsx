@@ -10,7 +10,6 @@ type PotentialBugCardProps = {
   index: number;
   description: string;
   onGeneratePrompt: () => void;
-  onReview: () => void;
   onSetStatus: (status: PotentialBugStatus) => void;
 };
 
@@ -19,11 +18,10 @@ export function PotentialBugCard({
   index,
   description,
   onGeneratePrompt,
-  onReview,
   onSetStatus,
 }: PotentialBugCardProps) {
   const excluded = bug.status === 'excluded';
-  const hintId = `generate-prompt-hint-${bug.id}`;
+  const hintId = `create-ticket-hint-${bug.id}`;
 
   return (
     <article
@@ -55,27 +53,22 @@ export function PotentialBugCard({
           aria-describedby={excluded ? hintId : undefined}
           onClick={onGeneratePrompt}
         >
-          Generate prompt
+          Create ticket
         </Button>
         {excluded ? (
           <p id={hintId} className="text-xs text-slate-500 dark:text-slate-400">
-            Include this bug to generate a prompt.
+            Include this bug to create a ticket.
           </p>
         ) : null}
-        <div className="grid min-w-0 grid-cols-2 gap-2">
-          <Button type="button" variant="secondary" onClick={onReview}>
-            Review
-          </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => {
-              onSetStatus(excluded ? 'included' : 'excluded');
-            }}
-          >
-            {excluded ? 'Include' : 'Exclude'}
-          </Button>
-        </div>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => {
+            onSetStatus(excluded ? 'included' : 'excluded');
+          }}
+        >
+          {excluded ? 'Include' : 'Exclude'}
+        </Button>
       </div>
     </article>
   );

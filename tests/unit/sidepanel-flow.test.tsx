@@ -109,34 +109,6 @@ describe('side panel capture flow', () => {
     ).toBeInTheDocument();
   });
 
-  it('captures several bugs manually with an optional note', async () => {
-    const user = userEvent.setup();
-    renderSidePanel();
-
-    await user.click(
-      await screen.findByRole('button', { name: 'Start capture' }),
-    );
-    await user.click(
-      await screen.findByRole('button', { name: 'Capture bug now' }),
-    );
-    await user.click(screen.getByRole('button', { name: 'Save bug' }));
-    await user.click(
-      await screen.findByRole('button', { name: 'Continue capture' }),
-    );
-    await user.click(screen.getByRole('button', { name: 'Capture bug now' }));
-    await user.type(
-      screen.getByRole('textbox', { name: /What went wrong\?/ }),
-      'Wrong total',
-    );
-    await user.click(screen.getByRole('button', { name: 'Save bug' }));
-
-    expect(await screen.findByLabelText('Bug captured')).toBeInTheDocument();
-    expect(potentialBugClientMock.getCaptureCalls()).toEqual([
-      { note: undefined },
-      { note: 'Wrong total' },
-    ]);
-  });
-
   it('reopens stopped sessions on Session Summary', async () => {
     const user = userEvent.setup();
     renderSidePanel();
@@ -206,7 +178,7 @@ describe('side panel capture flow', () => {
     await user.click(
       await screen.findByRole('button', { name: 'Stop and review' }),
     );
-    await user.click(await screen.findByRole('button', { name: 'Review' }));
+    await user.click(await screen.findByRole('button', { name: 'Issues' }));
 
     const review = screen.getByRole('region', { name: 'Issue Review' });
     expect(
@@ -268,7 +240,7 @@ describe('side panel capture flow', () => {
     await user.click(
       await screen.findByRole('button', { name: 'Stop and review' }),
     );
-    await user.click(await screen.findByRole('button', { name: 'Review' }));
+    await user.click(await screen.findByRole('button', { name: 'Issues' }));
     await user.click(screen.getByRole('button', { name: 'Back to summary' }));
 
     expect(

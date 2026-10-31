@@ -53,7 +53,7 @@ describe('buildPromptDescriptionContext', () => {
       '- Primary symptom: The browser console shows an error: “Boom”.',
     );
     expect(lines).toContain('- Writing lens: console');
-    expect(lines).toContain('- Capture type: manual (Capture bug now)');
+    expect(lines).toContain('- Capture type: manual');
   });
 });
 

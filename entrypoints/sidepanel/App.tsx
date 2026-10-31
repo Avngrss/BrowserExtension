@@ -24,7 +24,6 @@ import { useSidePanelView } from '@/src/hooks/useSidePanelView';
 import { useUiIssueList } from '@/src/hooks/useUiIssueList';
 import { useScreenshotEvidence } from '@/src/hooks/useScreenshotEvidence';
 import { usePotentialBugs } from '@/src/hooks/usePotentialBugs';
-import { useExtensionSettings } from '@/src/hooks/useExtensionSettings';
 import { countPotentialIssues } from '@/src/sidepanel/session-display';
 import { sessionHasPreservedData } from '@/src/sessions/session-preserved-data';
 import { extensionBrowser } from '@/src/utils/browser-client';
@@ -60,7 +59,6 @@ export function App() {
   const uiIssueList = useUiIssueList();
   const screenshotEvidence = useScreenshotEvidence();
   const potentialBugList = usePotentialBugs();
-  const extensionSettings = useExtensionSettings();
   const sessionPotentialBugs = useMemo(
     () =>
       isActiveSession(session.snapshot)
@@ -210,21 +208,7 @@ export function App() {
     hasMark: sessionPotentialBugs.length > 0,
   });
 
-  const captureBugEnabled =
-    isActiveSession(session.snapshot) &&
-    (session.status === 'recording' || session.status === 'paused');
-
-  const { captureBugNow, setStatus: setPotentialBugStatus } = potentialBugList;
-  const handleCaptureBug = useCallback(
-    async (input: { note?: string }) => {
-      const response = await captureBugNow(input);
-      if (!response.ok) {
-        return { ok: false as const, message: response.error.message };
-      }
-      return { ok: true as const };
-    },
-    [captureBugNow],
-  );
+  const { setStatus: setPotentialBugStatus } = potentialBugList;
 
   function handleStartNewCapture(): void {
     setNotice(undefined);
@@ -292,8 +276,6 @@ export function App() {
           timelineEntries={timelineEntries}
           timelineError={timelineError}
           timelineLoading={timelineLoading}
-          captureBugEnabled={captureBugEnabled}
-          onCaptureBug={handleCaptureBug}
         />
       ) : null}
 
@@ -348,7 +330,6 @@ export function App() {
           consoleIssues={consoleIssueList.issues}
           networkIssues={networkIssueList.issues}
           screenshotEvidence={screenshotEvidence.evidence}
-          extraInstructions={extensionSettings.prompt.extraInstructions}
           onBack={backToSummary}
         />
       ) : null}

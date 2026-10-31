@@ -2,6 +2,8 @@
 
 Browser extension (Manifest V3) for capturing testing sessions: user **Actions**, **UI**, **Console**, and **Network** issues on the monitored tab, optional **screenshot evidence**, **Issue Review**, and **Settings** (privacy, limits, UI rules).
 
+**Демо (как поставить и попробовать, по-русски):** [docs/demo-ru.md](./docs/demo-ru.md)
+
 ## Stack
 
 - WXT 0.21, React 19, TypeScript 5.9, Tailwind CSS 4

@@ -100,23 +100,7 @@
 
 ## SET-006. Extra prompt instructions
 
-Приоритет: High  
-Тип: Functional  
-Цель: Текст из **Extra instructions** попадает в **Generate prompt**; **Reset to default** очищает поле.
-
-Шаги
-
-1. **Settings** → **Bug ticket prompt** → в **Extra instructions** введите `Write the ticket in Russian.` → дождитесь **Settings saved.**
-
-   **Ожидаемый результат:** текст остаётся в поле после закрытия и повторного открытия **Settings**.
-
-2. Diagnostics: **Start capture** → **Create UI issue** → **Stop and review** → **Generate prompt**.
-
-   **Ожидаемый результат:** в **Generated prompt** в начале блок **Additional team instructions from Settings** и строка **Write the ticket in Russian.**; далее роль **You are a Senior QA Engineer.**
-
-3. **Settings** → **Reset to default** → **Settings saved.** → снова **Generate prompt** на той же карточке (или **Back to summary** и снова **Generate prompt**).
-
-   **Ожидаемый результат:** поле **Extra instructions** пустое; в промпте блока **Additional team instructions from Settings** нет.
+Кейс снят: **Bug ticket prompt** скрыт в Settings, пока тикет пишет расширение, а не LLM.
 
 ## SET-007. Advanced UI issue rules
 

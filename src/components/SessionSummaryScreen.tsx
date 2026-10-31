@@ -118,6 +118,11 @@ export function SessionSummaryScreen({
         <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
           Duration {durationLabel}
         </p>
+        <div className="mt-2">
+          <Button type="button" variant="secondary" onClick={onReviewIssues}>
+            Issues
+          </Button>
+        </div>
       </div>
 
       {finalizingScreenshots ? (
@@ -200,7 +205,6 @@ export function SessionSummaryScreen({
               onGeneratePrompt={() => {
                 onGeneratePrompt(bug.id);
               }}
-              onReview={onReviewIssues}
               onSetStatus={(status) => {
                 onSetBugStatus(bug.id, status);
               }}

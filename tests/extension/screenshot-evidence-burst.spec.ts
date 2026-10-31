@@ -137,10 +137,7 @@ test('burst screenshot evidence shares frames and finishes after stop', async ()
     await sidePanel.goto(
       `chrome-extension://${launched.extensionId}/sidepanel.html`,
     );
-    await sidePanel
-      .getByRole('button', { name: 'Review', exact: true })
-      .first()
-      .click();
+    await sidePanel.getByRole('button', { name: 'Issues' }).first().click();
     await expect(
       sidePanel
         .getByRole('img', { name: 'Issue screenshot thumbnail' })

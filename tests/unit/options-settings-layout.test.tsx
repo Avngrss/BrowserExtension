@@ -28,12 +28,11 @@ describe('options settings layout', () => {
       ),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { name: 'Bug ticket prompt' }),
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText('Extra instructions')).toBeInTheDocument();
+      screen.queryByRole('heading', { name: 'Bug ticket prompt' }),
+    ).not.toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Reset to default' }),
-    ).toBeInTheDocument();
+      screen.queryByLabelText('Extra instructions'),
+    ).not.toBeInTheDocument();
 
     const advanced = screen
       .getByText('Advanced UI issue rules')

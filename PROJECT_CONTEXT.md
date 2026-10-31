@@ -52,22 +52,21 @@ The extension should stay **simple**, **local and transparent by default**, **fo
 
 **Intended primary flow (product direction):**
 
-`Start capture` → test normally → **Potential bugs captured automatically** → optionally **Capture bug now** → **Stop and review** → **generate one prompt per bug** (first mode implemented)
+`Start capture` → test normally → **Potential bugs captured automatically** → **Stop and review** → **Create ticket**
 
 **Implemented today:**
 
 1. Open side panel (toolbar icon opens panel; no popup).
 2. On an `http`/`https` tab, **Start capture** → **Capturing this tab** when the monitored tab is bound and collectors are ready.
-3. While **recording** (or **paused** for manual bug capture only): explore the page; Actions and issues accumulate; **Potential issues** counter reflects unique UI + Console + Network issues.
-4. Optional **Capture bug now** (note optional) during recording/pause.
-5. **Stop and review** → **Session Summary**:
+3. While **recording** or **paused**: explore the page; Actions and issues accumulate; **Potential issues** counter reflects unique UI + Console + Network issues.
+4. **Stop and review** → **Session Summary**:
    - **No bugs:** “Session completed”, “No potential bugs detected”, recorded Actions count, **View activity**, **Start new capture**, **Delete session**.
-   - **With bugs:** headline `N potential bugs captured` ( **included** bugs only ), one **Potential bug** card each: factual description, **Generate prompt** (disabled on excluded cards with “Include this bug to generate a prompt.”), **Review**, **Exclude** / **Include**.
-6. **Generate prompt** on a card opens the **Steps for bug ticket** screen: a read-only **Generated prompt** for that one bug, **Copy prompt**, and **Back to summary**.
-7. **Review** on a card opens shared **Issue Review** (all session issues, dispositions, screenshots)—not a per-bug filtered view.
-8. **Settings** (options page): capture toggles, privacy, limits, UI rules, screenshots, notifications, extra bug-ticket prompt instructions.
+   - **With bugs:** headline `N potential bugs captured` ( **included** bugs only ), one **Potential bug** card each: factual description, **Create ticket** (disabled on excluded cards with “Include this bug to create a ticket.”), **Exclude** / **Include**. Summary has **Issues** (session-wide Issue Review).
+5. **Create ticket** on a card opens the **Bug ticket** screen: screenshot for this bug (if captured), a read-only draft ticket, **Copy ticket**, and **Back to summary**.
+6. **Review** on a card opens shared **Issue Review** (all session issues, dispositions, screenshots)—not a per-bug filtered view.
+7. **Settings** (options page): capture toggles, privacy, limits, UI rules, screenshots, notifications, extra bug-ticket prompt instructions.
 
-**Not in UI:** session-level **Bug context** form, **Report scope**, **Bug report preview**, **Mark issue** (replaced by **Capture bug now**).
+**Not in UI:** session-level **Bug context** form, **Report scope**, **Bug report preview**, **Mark issue**, **Capture bug now**.
 
 ---
 
@@ -134,12 +133,12 @@ States: **idle** → **recording** ↔ **paused** → **stopped** (see `src/doma
 - **Start** requires a **target tab binding** (tab id + sanitized URL). Unsupported tabs (e.g. `chrome://`) fail with user-visible guidance.
 - **Stop** keeps data for Summary; **Delete session** or **Start new capture** (with replace confirm when preserved data exists) clears artifacts.
 - `PersistentSessionStore` persists to session storage, resolves target tab, bootstraps content script (`content-tab-bootstrap`), and delivers session state to the target tab.
-- **Pause / resume** supported; screenshot auto-capture follows recording rules; manual **Capture bug now** is enabled when recording **or** paused.
+- **Pause / resume** supported; screenshot auto-capture follows recording rules.
 
 ### Background capture, badge, and notifications
 
 - Toolbar **badge** reflects recording / issue signal (`src/background/capture-indicators-runtime.ts`, `src/capture/capture-action-badge.ts`).
-- **Notifications:** title **Potential bug captured**; fired only when a **new** Potential bug is created from a **new unique** issue (`src/notifications/issue-notification-service.ts`). Grouping and duplicate issues do not notify. Manual **Capture bug now** does not notify. Gated by settings and active recording session.
+- **Notifications:** title **Potential bug captured**; fired only when a **new** Potential bug is created from a **new unique** issue (`src/notifications/issue-notification-service.ts`). Grouping and duplicate issues do not notify. Gated by settings and active recording session.
 
 ### Screenshot evidence and IndexedDB storage
 
@@ -150,7 +149,7 @@ States: **idle** → **recording** ↔ **paused** → **stopped** (see `src/doma
 
 ### Privacy and redaction
 
-- URL: sensitive query params, optional hash removal (`src/privacy/url-sanitizer.ts`).
+- URL: sensitive query params, optional hash removal (`src/privacy/url-sanitizer.ts`). Display paths omit long query strings (`formatActionTimelinePath`); ticket Environment is origin + pathname.
 - Field values: optional never-store for text fields; password/private field protection.
 - Applied in collectors and session URL fields via settings service.
 
@@ -158,10 +157,10 @@ States: **idle** → **recording** ↔ **paused** → **stopped** (see `src/doma
 
 | Surface                | Purpose                                                           |
 | ---------------------- | ----------------------------------------------------------------- |
-| **Capture**            | Start/pause/resume/stop, timeline, counts, **Capture bug now**    |
+| **Capture**            | Start/pause/resume/stop, timeline, counts                         |
 | **Session Summary**    | Potential bug cards or empty session result; activity expansion   |
 | **Issue Review**       | Category tabs, include/exclude/expected, screenshot evidence      |
-| **Bug ticket prompt**  | **Steps for bug ticket** prompt for one Potential bug (read-only) |
+| **Bug ticket**         | Draft ticket + optional AI prompt for one Potential bug           |
 | **Settings / Options** | Collectors, privacy, limits, screenshots, notifications, UI rules |
 
 ---
@@ -172,14 +171,14 @@ States: **idle** → **recording** ↔ **paused** → **stopped** (see `src/doma
 
 - **`docs/manual-testing/README.md`** — build/load, two page types (Automation Exercise + collector diagnostics), run order.
 - Cases are **Russian**; UI strings in steps match **English** product copy.
-- Explicitly **not** documented as implemented: Export, Prompt Builder modes other than **Steps for bug ticket**, LLM, webhooks, Jira/YouTube, past session history.
+- Explicitly **not** documented as implemented: Export file, extra Prompt Builder modes, in-extension LLM, webhooks, Jira/YouTrack, past session history.
 
 ### Automated
 
 - **Vitest:** `npm run test:run` — domain, stores, coordinators, side panel flows (mocked extension clients in `tests/setup.ts`).
 - **Playwright:** `npm run test:e2e` (= build + test); loads `.output/chrome-mv3`; **workers: 1**; helpers in `tests/helpers/extension-playwright.ts`:
   - Prefer **`startRecordingOnPage`** (runtime message + monitored tab focus) over clicking **Start capture** from the side panel alone.
-  - **`clickSidePanelControl`** — evaluate click so the monitored page stays focused (needed for **Capture bug now**).
+  - **`clickSidePanelControl`** — evaluate click so the monitored page stays focused.
 - **Key extension specs:** `potential-bugs.spec.ts` (two auto bugs, exclude, review, delete→start), `delete-start-repeated.spec.ts` (five delete/start cycles), collector/settings/navigation/screenshot suites.
 - **Removed** (obsolete UI): `mark-issue-flow`, `report-preview-*`, `session-summary-compact`, `session-summary-adaptive`.
 
@@ -244,7 +243,7 @@ Historically intermittent failures: side panel stuck idle, “Open an HTTP or HT
 **Current UX (implemented):**
 
 - Summary centered on **Potential bug cards** or a minimal **no bugs** result.
-- **Generate prompt** opens the **Steps for bug ticket** prompt for that card (see Prompt-first product direction).
+- **Create ticket** opens the **Bug ticket** draft for that card (see Prompt-first product direction).
 - Factual one-line descriptions via `buildPotentialBugDescription` (note → UI → console → network drafts in `src/bug-report/factual-what-happened-draft.ts`).
 
 **Legacy code still in repo (intentionally not deleted):**
@@ -269,7 +268,7 @@ Do **not** recommend deleting structured report code until Prompt Builder reuses
 | Later unrelated issue → new bug                                                               | Window slides from `lastDetectedAt`                                                        |
 | Duplicates                                                                                    | No new bug; issue already linked → no-op                                                   |
 | Meaningful actions                                                                            | `selectMeaningfulActions` + `refineActionStepEntries` (does **not** mutate stored Actions) |
-| Manual fallback                                                                               | **Capture bug now** — `CaptureBugNowControls.tsx`, no one-per-session limit                |
+| Manual fallback                                                                               | Removed from UI (**Capture bug now**). Store/message path may still exist.                 |
 | Persistence                                                                                   | `chrome.storage.session` key `bugCaptureAssistant.sessionPotentialBugs`                    |
 | Clear on session delete/replace                                                               | `potentialBugStore.clear()` in `clearSessionArtifacts`                                     |
 
@@ -277,14 +276,13 @@ Do **not** recommend deleting structured report code until Prompt Builder reuses
 
 - **Review** on a card opens **session-wide** Issue Review, not an isolated view for that bug’s issues/actions only.
 - **Headline count** includes **included** bugs only; excluded cards remain visible.
-- **Manual capture:** screenshot requested via mark-category link; requires active capture pipeline (recording; pause allowed for the button, verify screenshot behavior when paused).
 - **Notifications** only for automatic new bugs.
 
 ### Legacy Mark issue (accurate status)
 
 - **User-facing Mark issue flow is removed.**
 - **IssueMark** store, storage, and router handlers **remain** for compatibility/tests; cleared with session artifacts; **not** used in side panel UI.
-- Intended manual fallback name: **Capture bug now**.
+- User-facing **Capture bug now** is removed.
 
 ---
 
@@ -292,11 +290,10 @@ Do **not** recommend deleting structured report code until Prompt Builder reuses
 
 **Implemented (first slice):**
 
-- Mode **Steps for bug ticket** — `buildStepsForBugTicketPrompt` in `src/prompt/steps-for-bug-ticket-prompt.ts`; screen `PotentialBugPromptScreen.tsx`; side panel view `prompt` in `useSidePanelView`.
-- Prompt = one Senior QA agent + a **writing lens** from the primary symptom (`ui` / `console` / `network` / `mixed` / `observation`). Ticket shape stays Title / Description / Steps / Actual / Expected / Severity / Priority / Labels / Environment. Evidence is typed (UI / Console / Network blocks); Related signals are correlation only and cannot become Title or Actual. Network signals include HTTP 4xx/5xx and transport failures; analytics HTTP 200 is omitted. Optional Settings extra instructions. No Evidence section.
-- Built in the side panel from stored settings + data it already has; no extra permissions.
-- **Copy prompt** copies the generated text to the clipboard.
-- **Settings → Bug ticket prompt**: optional extra instructions (empty = default); **Reset to default**.
+- **Create ticket** shows a deterministic draft from `buildBugTicketDraft` (`src/bug-report/bug-ticket-draft.ts`) on `PotentialBugPromptScreen`. **Copy ticket** copies that markdown. Linked screenshots for that bug render on the same screen. The Senior QA prompt builder remains in code for a later in-extension LLM; it is not shown in the UI.
+- Ticket shape: Title / Description / Steps / Actual / Expected / Severity / Priority / Labels / Environment, with a writing lens (`ui` / `console` / `network` / `mixed` / `observation`). Description states the page, the symptom, the steps before it, and other captured signals. Analytics noise such as `/g/collect` is left out unless the failed request itself is the bug. Network signals include HTTP 4xx/5xx and transport failures; analytics HTTP 200 is omitted. Display URLs stay short (no analytics query dump; opaque path ids become a readable page name in steps).
+- Built in the side panel from data it already has; no extra permissions.
+- **Settings → Bug ticket prompt** is hidden until an LLM writes the ticket from an editable agent.
 
 **Planned (not implemented):**
 
@@ -315,7 +312,7 @@ Do **not** recommend deleting structured report code until Prompt Builder reuses
 
 1. **Reconcile this file with the repo** after any drift (next AI session step zero).
 2. **Manual acceptance of Potential bugs + Steps for bug ticket** — checklist in `docs/manual-testing/acceptance.md`: SES-005 steps 1b–1g, E2E-002 (prompt follows Review dispositions), E2E-004 step 4a.
-3. **Validate prompt quality on real captures** — E2E-006 (Automation Exercise → Copy prompt → AI assistant, list of manual ticket edits); fix only what materially affects usefulness.
+3. **Validate ticket quality on real captures** — E2E-006 (Automation Exercise → Create ticket → Copy ticket); fix only what materially affects usefulness.
 4. Keep Summary **card-centric**; resist re-expanding session-level forms on the primary screen.
 
 Playwright lifecycle specs use **`startRecordingOnPage`** / **`clickSidePanelControl`** (full extension suite was green at last run).
@@ -398,7 +395,7 @@ Every AI session that **implements** product or test behavior must follow this c
 3. Implement the **first Prompt Builder mode** for one selected Potential bug: **Steps for bug ticket** — **done** (pending manual acceptance).
 4. Validate prompt quality on real captured examples; improve only what materially affects usefulness.
 5. Consider additional prompt modes only after the first mode is proven valuable.
-6. **Copy prompt** is implemented; file export remains postponed.
+6. **Copy ticket** is implemented; file export and in-extension LLM remain postponed.
 7. Full manual regression near MVP completion.
 8. Integrations, manual visual-bug capture, extra collectors, session history — **only after** core MVP is stable.
 
@@ -450,7 +447,7 @@ Manual smoke: `docs/manual-testing/smoke-checklist.md`.
 
 ## Product direction to preserve
 
-- **Start capture → test normally → automatic Potential bugs → optional Capture bug now → Stop → one prompt per bug** (first mode, **Steps for bug ticket**, implemented; Export still ahead).
+- **Start capture → test normally → automatic Potential bugs → Stop → Create ticket** (draft ticket implemented; file export still ahead).
 - Main artifact = **`PotentialBug` records**, not a monolithic session report.
 - Keep evidence rich **internally** and in **Review**; keep **Summary** simple.
 - Central goal unchanged: **minimum tester effort, maximum useful context** for fast, high-quality bug reports.

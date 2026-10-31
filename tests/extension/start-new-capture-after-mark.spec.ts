@@ -11,7 +11,7 @@ import {
 } from '../helpers/extension-playwright';
 import { startDiagnosticsServer } from '../helpers/diagnostics-server';
 
-test('start new capture after Capture bug now without page reload', async () => {
+test('start new capture after an automatic bug without page reload', async () => {
   test.setTimeout(180_000);
   const { baseUrl, server } = await startDiagnosticsServer();
   const launched = await launchExtension();
@@ -33,15 +33,7 @@ test('start new capture after Capture bug now without page reload', async () => 
     await page.click('#console-error');
     await page.waitForTimeout(400);
 
-    await clickSidePanelControl(sidePanel, page, { name: 'Capture bug now' });
-    await clickSidePanelControl(sidePanel, page, { name: 'Save bug' });
-    await expect(sidePanel.getByText('Bug captured')).toBeVisible({
-      timeout: 10_000,
-    });
-    await clickSidePanelControl(sidePanel, page, {
-      name: 'Stop and review',
-      withinLabel: 'Bug captured',
-    });
+    await clickSidePanelControl(sidePanel, page, { name: 'Stop and review' });
     await expect(
       sidePanel.getByRole('heading', { name: 'Session Summary' }),
     ).toBeVisible({ timeout: 15_000 });

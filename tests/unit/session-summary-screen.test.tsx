@@ -125,11 +125,14 @@ describe('SessionSummaryScreen', () => {
     expectRemovedReportUi();
 
     await user.click(
-      within(card).getByRole('button', { name: 'Generate prompt' }),
+      within(card).getByRole('button', { name: 'Create ticket' }),
     );
     expect(props.onGeneratePrompt).toHaveBeenCalledWith('bug-1');
-    await user.click(within(card).getByRole('button', { name: 'Review' }));
+    await user.click(screen.getByRole('button', { name: 'Issues' }));
     expect(props.onReviewIssues).toHaveBeenCalledOnce();
+    expect(
+      within(card).queryByRole('button', { name: 'Review' }),
+    ).not.toBeInTheDocument();
     await user.click(within(card).getByRole('button', { name: 'Exclude' }));
     expect(props.onSetBugStatus).toHaveBeenCalledWith('bug-1', 'excluded');
   });
@@ -159,14 +162,14 @@ describe('SessionSummaryScreen', () => {
       within(excluded).getByRole('button', { name: 'Include' }),
     ).toBeInTheDocument();
     const excludedPrompt = within(excluded).getByRole('button', {
-      name: 'Generate prompt',
+      name: 'Create ticket',
     });
     expect(excludedPrompt).toBeDisabled();
     expect(excludedPrompt).toHaveAccessibleDescription(
-      'Include this bug to generate a prompt.',
+      'Include this bug to create a ticket.',
     );
     expect(
-      within(manual).getByRole('button', { name: 'Generate prompt' }),
+      within(manual).getByRole('button', { name: 'Create ticket' }),
     ).toBeEnabled();
   });
 });

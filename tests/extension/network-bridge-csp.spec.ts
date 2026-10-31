@@ -394,7 +394,7 @@ test('captures fetch and xhr network failures on a CSP-protected page', async ()
     ).toBeVisible({ timeout: 15_000 });
     await page.bringToFront();
     await sidePanel
-      .getByRole('button', { name: 'Review', exact: true })
+      .getByRole('button', { name: 'Issues' })
       .first()
       .evaluate((element) => {
         (element as HTMLElement).click();

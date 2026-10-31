@@ -46,9 +46,9 @@
 
    **Ожидаемый результат:** dispositions соответствуют выбору; UI issue с thumbnail (если скриншоты UI включены по умолчанию).
 
-3. **Back to summary** → **Generate prompt** на карточке **Potential bug 1**.
+3. **Back to summary** → **Create ticket** на карточке **Potential bug 1**.
 
-   **Ожидаемый результат:** до нажатия — одна карточка (**1 potential bug captured**). Экран **Steps for bug ticket**; **WRITING LENS (mixed, primary: ui)**; **Primary symptom** / **Actual result** — **Diagnostics UI issue**; в **Related signals** — **Diagnostics console error [Expected]** (не UI); строки с **/diagnostics-missing** нет; в правилах есть **Signals marked [Expected] were confirmed as expected by the tester. Do not report them as defects.**
+   **Ожидаемый результат:** до нажатия — одна карточка (**1 potential bug captured**). Экран **Bug ticket**; в тикете **Diagnostics UI issue**; **Diagnostics console error** нет (expected). Строки с **/diagnostics-missing** нет.
 
 ## E2E-003. Capture на diagnostics, работа на Automation Exercise
 
@@ -72,39 +72,7 @@
 
 ## E2E-004. Capture bug now
 
-Приоритет: High  
-Тип: E2E  
-Цель: Ручной захват нескольких багов до Summary и замены сессии.
-
-Предусловия
-
-- Automation Exercise или diagnostics; **Start capture** → минимум один action (**Products** или **Create action event**).
-
-Шаги
-
-1. Side panel → **Capture bug now**.
-
-   **Ожидаемый результат:** форма **What went wrong?** (заметка необязательна), **Save bug**, **Cancel**.
-
-2. Введите заметку → **Save bug**.
-
-   **Ожидаемый результат:** **Bug captured**; **Continue capture**; **Stop and review**.
-
-3. **Continue capture** → снова **Capture bug now** → **Save bug** без заметки.
-
-   **Ожидаемый результат:** диалога замены нет; снова **Bug captured**.
-
-4. **Stop and review** (кнопка в блоке **Bug captured** или основная).
-
-   **Ожидаемый результат:** **2 potential bugs captured**; две карточки **Captured manually**; у первой **Factual description** — текст заметки, у второй — первый недавний issue или **Captured manually on <путь>.** (без догадок о причине); **Generate prompt** активна. Нет **Report scope**, **Bug context** и **Bug report preview**.
-
-4a. **Generate prompt** на карточке с заметкой.
-
-**Ожидаемый результат:** экран **Steps for bug ticket**; в **Generated prompt** **Capture type: manual** и текст заметки после **Tester note:**. Кнопка **Copy prompt**. **Back to summary** возвращает на **Session Summary**.
-
-5. **Start new capture** → подтвердите без F5 на web-странице.
-
-   **Ожидаемый результат:** **Capturing this tab**; карточек **Potential bug** **нет**; новый **Products** даёт одну запись в **Actions**.
+Кейс снят: **Capture bug now** убран из UI. Баги создаются автоматически с issues.
 
 ## E2E-005. Privacy на форме Signup
 
@@ -130,7 +98,7 @@
 
 Приоритет: High  
 Тип: E2E  
-Цель: Промпт **Steps for bug ticket** с реального сайта даёт в AI-ассистенте тикет, который не нужно переписывать, и не содержит введённых данных.
+Цель: **Create ticket** с реального сайта даёт черновик, который можно копировать, без введённых данных.
 
 Предусловия
 
@@ -148,17 +116,17 @@
 
    **Ожидаемый результат:** **Actions** выросло; в **Recent activity** нет `bca-prompt@test.example` и `BCA prompt check`.
 
-2. **Capture bug now** → заметка из тестовых данных → **Save bug** → **Stop and review**.
+2. **Stop and review**. Если карточек нет — на diagnostics **Create UI issue** и повторите.
 
-   **Ожидаемый результат:** карточка **Captured manually**, в **Factual description** — текст заметки. Если сайт сам выдал ошибки, рядом будут автоматические карточки; для кейса берите карточку **Captured manually**.
+   **Ожидаемый результат:** есть хотя бы одна карточка **Potential bug**.
 
-3. **Generate prompt** на этой карточке.
+3. **Create ticket** на этой карточке.
 
-   **Ожидаемый результат:** **Capture type: manual**; **WRITING LENS (observation)** если к карточке не привязан defect, иначе линза по Primary symptom; после **Tester note:** — заметка; **Page URL** — страница Contact us; в шагах — ваши действия в том же порядке, не больше 5; в тексте нет `bca-prompt@test.example` и `BCA prompt check`.
+   **Ожидаемый результат:** экран **Bug ticket**; Title / Description / Steps / Actual / Expected / Severity / Priority / Labels / Environment; в шагах — ваши действия в том же порядке, не больше 5; в тексте нет `bca-prompt@test.example` и `BCA prompt check`.
 
-4. **Copy prompt** → вставьте промпт в AI-ассистент.
+4. **Copy ticket**.
 
-   **Ожидаемый результат:** notice **Copied.** Тикет как у QA: короткий **Title** (`[Feature] …`), живой **Description**, **Steps to Reproduce**, **Actual Result**, **Expected Result** (из заметки), **Severity**, **Priority**, **Labels**, **Environment**. Шаги совпадают с вашими действиями, новых нет; догадок о причине нет. Секции **Evidence** нет.
+   **Ожидаемый результат:** notice **Ticket copied.** Тикет как у QA: короткий **Title** (`[Feature] …`), живой **Description**, **Steps to Reproduce**, **Actual Result**, **Expected Result**, **Severity**, **Priority**, **Labels**, **Environment**. Шаги совпадают с вашими действиями, новых нет; догадок о причине нет. Секции **Evidence** нет.
 
 5. Сравните тикет с тем, что вы завели бы сами.
 

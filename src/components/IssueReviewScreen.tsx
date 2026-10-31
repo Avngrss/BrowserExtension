@@ -125,7 +125,7 @@ export function IssueReviewScreen({
       </div>
 
       <p className="text-xs leading-5 text-slate-600 dark:text-slate-300">
-        Review screenshots before exporting or sending session data.
+        Mark expected or noisy issues so they stay out of tickets.
       </p>
 
       <details className="rounded border border-slate-200 bg-slate-50 p-2 dark:border-slate-700 dark:bg-slate-900/60">

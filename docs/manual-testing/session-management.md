@@ -150,7 +150,7 @@
 
 1b. Новая сессия: **Create action event** → **Create UI issue**, подождите больше 3 с → **Create console error** → **Stop and review**.
 
-**Ожидаемый результат:** заголовок **2 potential bugs captured**; две карточки **Potential bug 1** и **Potential bug 2**. В каждой — **Factual description** только из фактов (первая: **The page shows “Diagnostics UI issue”.**, вторая: **The browser console shows an error: “Diagnostics console error”.**); активная **Generate prompt**; **Review**; **Exclude**. Счётчиков relevant Actions / related issues / screenshots нет. Подписи **Coming next** нет.
+**Ожидаемый результат:** заголовок **2 potential bugs captured**; две карточки **Potential bug 1** и **Potential bug 2**. В каждой — **Factual description** только из фактов (первая: **The page shows “Diagnostics UI issue”.**, вторая: **The browser console shows an error: “Diagnostics console error”.**); активная **Create ticket**; **Exclude**. На Summary — **Issues**. Счётчиков relevant Actions / related issues / screenshots нет. Подписи **Coming next** нет.
 
 1c. Повторно **Create UI issue** и **Create console error** в пределах 3 с от первого issue (до **Stop and review**).
 
@@ -158,15 +158,15 @@
 
 1d. **Exclude** на второй карточке.
 
-**Ожидаемый результат:** карточка помечена **Excluded**, кнопка **Include**; заголовок **1 potential bug captured**; **Generate prompt** на этой карточке неактивна, под ней **Include this bug to generate a prompt.**
+**Ожидаемый результат:** карточка помечена **Excluded**, кнопка **Include**; заголовок **1 potential bug captured**; **Create ticket** на этой карточке неактивна, под ней **Include this bug to create a ticket.**
 
-1e. **Review** → **Back to summary**; затем закройте и снова откройте side panel.
+1e. **Issues** → **Back to summary**; затем закройте и снова откройте side panel.
 
 **Ожидаемый результат:** **Issue Review** открывается и возвращает на **Session Summary**; карточки и статус **Excluded** сохранены.
 
-1f. **Generate prompt** на первой карточке.
+1f. **Create ticket** на первой карточке.
 
-**Ожидаемый результат:** экран **Steps for bug ticket**, под заголовком **Bug 1 · <путь страницы>**; поле **Generated prompt** только для чтения; кнопка **Copy prompt**. В тексте: **WRITING LENS (ui)**; правила без выдуманного expected result и root cause; блок **Captured evidence:** с **Page URL**, **Tester note** → **Not captured**, шаги этой карточки, **Primary symptom** / **Actual result** / **UI evidence** с **Diagnostics UI issue**, без **Diagnostics console error**. **Copy prompt** копирует тот же текст (notice **Copied.**); клик по полю выделяет весь текст.
+**Ожидаемый результат:** экран **Bug ticket**, под заголовком **Bug 1 · <путь страницы>**; поле **Draft ticket** только для чтения; кнопка **Copy ticket**. В тикете — **[…] Diagnostics UI issue**, шаги карточки, без **Diagnostics console error**. Если был UI-скрин — он на этом экране. **Copy ticket** копирует тикет (notice **Ticket copied.**).
 
 1g. **Back to summary**.
 
@@ -240,7 +240,7 @@
 
    **Ожидаемый результат:** **Actions** равно **1**; одна новая строка в **Recent activity**.
 
-7. Повторите цикл **Stop and review** → **Delete session** → **Start capture** → одно действие на той же вкладке **без F5** ещё **четыре раза** (всего пять циклов). В одном цикле перед **Stop** выполните **Create UI issue** и **Capture bug now** с заметкой, дождитесь **Bug captured**.
+7. Повторите цикл **Stop and review** → **Delete session** → **Start capture** → одно действие на той же вкладке **без F5** ещё **четыре раза** (всего пять циклов). В одном цикле перед **Stop** выполните **Create UI issue**.
 
    **Ожидаемый результат:** каждый раз **Capturing this tab**; **Actions** снова **1** после одного действия; нет карточек **Potential bug**, старых issues и скриншотов удалённой сессии; нет **Capture could not start on this page.**
 

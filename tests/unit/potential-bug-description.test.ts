@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildPotentialBugDescription,
   countPotentialBugScreenshots,
+  selectPotentialBugScreenshots,
 } from '@/src/potential-bugs/potential-bug-description';
 import type { ScreenshotEvidence } from '@/src/domain/screenshot-evidence';
 import {
@@ -108,5 +109,17 @@ describe('countPotentialBugScreenshots', () => {
         evidence({ id: 'e5', frameId: 'f4', status: 'failed' }),
       ]),
     ).toBe(2);
+  });
+
+  it('selects captured frames linked to the bug', () => {
+    const bug = potentialBug('bug-1', {
+      issues: [{ category: 'ui', issueId: 'u1' }],
+    });
+    const selected = selectPotentialBugScreenshots(bug, [
+      evidence({ id: 'e1' }),
+      evidence({ id: 'e2', issueCategory: 'console', issueId: 'c1' }),
+      evidence({ id: 'e3', frameId: 'f2', status: 'pending' }),
+    ]);
+    expect(selected.map((item) => item.id)).toEqual(['e1']);
   });
 });

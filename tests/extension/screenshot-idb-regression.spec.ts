@@ -71,7 +71,7 @@ test('burst screenshots survive IndexedDB migration and appear in Summary', asyn
 
     await page.bringToFront();
     await sidePanel
-      .getByRole('button', { name: 'Review', exact: true })
+      .getByRole('button', { name: 'Issues' })
       .first()
       .evaluate((element) => {
         (element as HTMLElement).click();

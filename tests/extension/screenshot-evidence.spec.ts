@@ -207,7 +207,7 @@ test('automatic screenshot evidence in production build', async () => {
 
     await page.bringToFront();
     await sidePanel
-      .getByRole('button', { name: 'Review', exact: true })
+      .getByRole('button', { name: 'Issues' })
       .first()
       .evaluate((element) => {
         (element as HTMLElement).click();

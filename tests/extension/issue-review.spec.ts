@@ -186,10 +186,7 @@ test('reviews UI, console, and network issues in the side panel', async () => {
     await sidePanel.goto(
       `chrome-extension://${launched.extensionId}/sidepanel.html`,
     );
-    await sidePanel
-      .getByRole('button', { name: 'Review', exact: true })
-      .first()
-      .click();
+    await sidePanel.getByRole('button', { name: 'Issues' }).first().click();
 
     await expect(
       sidePanel.getByRole('button', { name: 'Include ui issue' }),

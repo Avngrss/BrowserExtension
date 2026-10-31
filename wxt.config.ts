@@ -49,8 +49,20 @@ export default defineConfig({
     minimum_chrome_version: '114',
     permissions: ['storage', 'tabs', 'scripting', 'sidePanel', 'notifications'],
     host_permissions: ['http://*/*', 'https://*/*', '<all_urls>'],
+    icons: {
+      16: '/icon-16.png',
+      32: '/icon-32.png',
+      48: '/icon-48.png',
+      128: '/icon-128.png',
+    },
     action: {
       default_title: 'Bug Capture Assistant',
+      default_icon: {
+        16: '/icon-16.png',
+        32: '/icon-32.png',
+        48: '/icon-48.png',
+        128: '/icon-128.png',
+      },
     },
     side_panel: {
       default_path: 'sidepanel.html',

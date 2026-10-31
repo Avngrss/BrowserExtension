@@ -322,7 +322,7 @@ export async function stopFromCapture(
 
 /**
  * Clicks a side panel control while keeping the monitored page as the active tab.
- * Playwright's normal click() activates the side panel tab, which disables Capture bug now.
+ * Playwright's normal click() activates the side panel tab and can steal page focus.
  */
 export async function clickSidePanelControl(
   sidePanel: Page,

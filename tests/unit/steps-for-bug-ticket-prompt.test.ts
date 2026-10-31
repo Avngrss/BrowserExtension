@@ -210,9 +210,7 @@ describe('buildStepsForBugTicketPrompt', () => {
     );
 
     expect(prompt).toContain('WRITING LENS (observation):');
-    expect(evidenceSection(prompt)).toContain(
-      '- Capture type: manual (Capture bug now)',
-    );
+    expect(evidenceSection(prompt)).toContain('- Capture type: manual');
     expect(evidenceSection(prompt)).toContain(
       'Actual result (from capture):\nNo confirmation after submit.',
     );

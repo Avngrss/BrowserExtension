@@ -1,21 +1,10 @@
-import type { ConsoleIssue } from '@/src/domain/console-issue';
-import type { IssueDisposition } from '@/src/domain/issue-disposition';
-import type { NetworkIssue } from '@/src/domain/network-issue';
+import { rewriteOpaqueNavigationStep } from '@/src/actions/action-report-steps';
 import type {
   PotentialBug,
   PotentialBugIssueCategory,
-  PotentialBugIssueRef,
 } from '@/src/domain/potential-bug';
-import type { UiIssue } from '@/src/domain/ui-issue';
 import type { PotentialBugIssueLookup } from '@/src/potential-bugs/potential-bug-description';
-import {
-  consoleIssueFactualDraft,
-  networkIssueFactualDraft,
-  uiIssueFactualDraft,
-} from '@/src/bug-report/factual-what-happened-draft';
-import { isReportableNetworkIssue } from '@/src/bug-report/reportable-network-issue';
-import { formatActionTimelinePath } from '@/src/privacy/timeline-url';
-import { truncateCapturedText } from '@/src/privacy/text-sanitizer';
+import { formatTicketEnvironmentUrl } from '@/src/privacy/timeline-url';
 import {
   classifyBugTicketLens,
   lensInstructionLines,
@@ -23,6 +12,7 @@ import {
   relatedPromptSignals,
   type BugTicketLens,
 } from '@/src/prompt/bug-ticket-lens';
+import { resolveBugTicketSignals } from '@/src/prompt/bug-ticket-signals';
 import {
   buildPromptActualResultFact,
   buildPromptDescriptionContext,
@@ -30,121 +20,12 @@ import {
   type PromptSignal,
 } from '@/src/prompt/prompt-description-context';
 
-export const STEPS_FOR_BUG_TICKET_MODE_LABEL = 'Steps for bug ticket';
+export const STEPS_FOR_BUG_TICKET_MODE_LABEL = 'Bug ticket';
 
 const NOT_CAPTURED = PROMPT_NOT_CAPTURED;
 
 const RELATED_SIGNALS_HEADING =
   'Related signals (correlation only; do not use as Title or Actual Result):';
-
-function quoted(value: string): string {
-  const safe = truncateCapturedText(value) ?? value.trim();
-  return `“${safe}”`;
-}
-
-function uiEvidenceLines(issue: UiIssue): string[] {
-  const message = issue.visibleMessage?.trim();
-  const lines =
-    message !== undefined && message.length > 0
-      ? [`Visible message: ${quoted(message)}`]
-      : ['Visible message: not shown in capture'];
-  const ruleName = issue.ruleName.trim();
-  if (ruleName.length > 0) {
-    lines.push(`Rule: ${ruleName}`);
-  }
-  return lines;
-}
-
-function consoleEvidenceLines(issue: ConsoleIssue): string[] {
-  return [`Error: ${quoted(issue.message)}`, `Category: ${issue.category}`];
-}
-
-function networkEvidenceLines(issue: NetworkIssue): string[] {
-  const path = formatActionTimelinePath(issue.url);
-  const lines = [`Request: ${issue.method} ${path}`];
-  if (issue.status !== undefined) {
-    lines.push(`Status: HTTP ${issue.status}`);
-    return lines;
-  }
-  const failure = issue.failureMessage?.trim();
-  if (failure !== undefined && failure.length > 0) {
-    lines.push(`Failure: ${quoted(failure)}`);
-    return lines;
-  }
-  if (issue.category === 'timeout') {
-    lines.push('Outcome: timed out');
-    return lines;
-  }
-  if (issue.category === 'aborted') {
-    lines.push('Outcome: aborted');
-    return lines;
-  }
-  lines.push('Outcome: failed');
-  return lines;
-}
-
-function problemLine(
-  issue: { disposition: IssueDisposition },
-  category: PotentialBugIssueCategory,
-  text: string,
-  evidenceLines: string[],
-): PromptSignal | null {
-  if (issue.disposition === 'excluded') {
-    return null;
-  }
-  return {
-    category,
-    text,
-    expected: issue.disposition === 'expected',
-    evidenceLines,
-  };
-}
-
-function resolveSignal(
-  ref: PotentialBugIssueRef,
-  lookup: PotentialBugIssueLookup,
-): PromptSignal | null {
-  switch (ref.category) {
-    case 'ui': {
-      const issue = lookup.uiIssues.find((item) => item.id === ref.issueId);
-      return issue === undefined
-        ? null
-        : problemLine(
-            issue,
-            'ui',
-            uiIssueFactualDraft(issue),
-            uiEvidenceLines(issue),
-          );
-    }
-    case 'console': {
-      const issue = lookup.consoleIssues.find(
-        (item) => item.id === ref.issueId,
-      );
-      return issue === undefined
-        ? null
-        : problemLine(
-            issue,
-            'console',
-            consoleIssueFactualDraft(issue),
-            consoleEvidenceLines(issue),
-          );
-    }
-    case 'network': {
-      const issue = lookup.networkIssues.find(
-        (item) => item.id === ref.issueId,
-      );
-      if (issue === undefined || !isReportableNetworkIssue(issue)) {
-        return null;
-      }
-      return problemLine(
-        issue,
-        'network',
-        networkIssueFactualDraft(issue),
-        networkEvidenceLines(issue),
-      );
-    }
-  }
-}
 
 function instructions(input: {
   lens: BugTicketLens;
@@ -266,9 +147,7 @@ export function buildStepsForBugTicketPrompt(
   screenshotCount: number,
   extraInstructions = '',
 ): string {
-  const signals = bug.issues
-    .map((ref) => resolveSignal(ref, lookup))
-    .filter((line): line is PromptSignal => line !== null);
+  const signals = resolveBugTicketSignals(bug, lookup);
   const lens = classifyBugTicketLens(signals);
   const primaryText = primarySymptomText(signals, lens);
   const related = relatedPromptSignals(signals, lens);
@@ -294,7 +173,7 @@ export function buildStepsForBugTicketPrompt(
     'Context:',
     ...descriptionContext,
     '',
-    `Page URL: ${bug.page.url}`,
+    `Page URL: ${formatTicketEnvironmentUrl(bug.page.url)}`,
     ...(title !== undefined && title.length > 0
       ? [`Page title: ${title}`]
       : []),
@@ -304,7 +183,10 @@ export function buildStepsForBugTicketPrompt(
     '',
     'Steps to reproduce (oldest first):',
     ...(bug.actions.length > 0
-      ? bug.actions.map((action, index) => `${index + 1}. ${action.step}`)
+      ? bug.actions.map(
+          (action, index) =>
+            `${index + 1}. ${rewriteOpaqueNavigationStep(action.step, bug.page.pathname)}`,
+        )
       : [NOT_CAPTURED]),
     '',
     'Actual result (from capture):',

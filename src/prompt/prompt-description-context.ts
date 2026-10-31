@@ -1,7 +1,9 @@
+import { rewriteOpaqueNavigationStep } from '@/src/actions/action-report-steps';
 import type {
   PotentialBug,
   PotentialBugIssueCategory,
 } from '@/src/domain/potential-bug';
+import { formatActionTimelinePath } from '@/src/privacy/timeline-url';
 import {
   writingLensContextLine,
   type BugTicketLens,
@@ -16,8 +18,10 @@ export type PromptSignal = {
   evidenceLines: string[];
 };
 
-function formatUserFlow(bug: PotentialBug): string | null {
-  const steps = bug.actions.map((action) => action.step.trim());
+export function formatPromptUserFlow(bug: PotentialBug): string | null {
+  const steps = bug.actions.map((action) =>
+    rewriteOpaqueNavigationStep(action.step.trim(), bug.page.pathname),
+  );
   if (steps.length === 0) {
     return null;
   }
@@ -39,13 +43,12 @@ export function buildPromptDescriptionContext(
 ): string[] {
   const lines: string[] = [];
   const title = bug.page.title?.trim();
+  const path = formatActionTimelinePath(bug.page.url);
   const where =
-    title !== undefined && title.length > 0
-      ? `${title} (${bug.page.pathname})`
-      : bug.page.pathname;
+    title !== undefined && title.length > 0 ? `${title} (${path})` : path;
   lines.push(`- Where: ${where}`);
 
-  const flow = formatUserFlow(bug);
+  const flow = formatPromptUserFlow(bug);
   if (flow !== null) {
     lines.push(`- Flow leading to the issue: ${flow}`);
   }
@@ -61,7 +64,7 @@ export function buildPromptDescriptionContext(
 
   lines.push(writingLensContextLine(lens));
   lines.push(
-    `- Capture type: ${bug.source === 'manual' ? 'manual (Capture bug now)' : 'automatic'}`,
+    `- Capture type: ${bug.source === 'manual' ? 'manual' : 'automatic'}`,
   );
 
   return lines;

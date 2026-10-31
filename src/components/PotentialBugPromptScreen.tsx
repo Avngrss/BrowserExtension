@@ -1,18 +1,20 @@
 import { useMemo, useState, type SyntheticEvent } from 'react';
+import { BugTicketScreenshot } from '@/src/components/BugTicketScreenshot';
 import { Button } from '@/src/components/Button';
+import {
+  buildBugTicketDraft,
+  formatBugTicketDraft,
+} from '@/src/bug-report/bug-ticket-draft';
 import type { ConsoleIssue } from '@/src/domain/console-issue';
 import type { NetworkIssue } from '@/src/domain/network-issue';
 import type { PotentialBug } from '@/src/domain/potential-bug';
 import type { ScreenshotEvidence } from '@/src/domain/screenshot-evidence';
 import type { UiIssue } from '@/src/domain/ui-issue';
 import {
-  countPotentialBugScreenshots,
   potentialBugTitle,
+  selectPotentialBugScreenshots,
 } from '@/src/potential-bugs/potential-bug-description';
-import {
-  STEPS_FOR_BUG_TICKET_MODE_LABEL,
-  buildStepsForBugTicketPrompt,
-} from '@/src/prompt/steps-for-bug-ticket-prompt';
+import { STEPS_FOR_BUG_TICKET_MODE_LABEL } from '@/src/prompt/steps-for-bug-ticket-prompt';
 
 type PotentialBugPromptScreenProps = {
   potentialBugs: PotentialBug[];
@@ -21,7 +23,6 @@ type PotentialBugPromptScreenProps = {
   consoleIssues: ConsoleIssue[];
   networkIssues: NetworkIssue[];
   screenshotEvidence: ScreenshotEvidence[];
-  extraInstructions: string;
   onBack: () => void;
 };
 
@@ -39,7 +40,6 @@ export function PotentialBugPromptScreen({
   consoleIssues,
   networkIssues,
   screenshotEvidence,
-  extraInstructions,
   onBack,
 }: PotentialBugPromptScreenProps) {
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'failed'>(
@@ -47,30 +47,26 @@ export function PotentialBugPromptScreen({
   );
   const index = potentialBugs.findIndex((bug) => bug.id === bugId);
   const bug = index === -1 ? undefined : potentialBugs[index];
+  const lookup = useMemo(
+    () => ({ uiIssues, consoleIssues, networkIssues }),
+    [uiIssues, consoleIssues, networkIssues],
+  );
 
-  const prompt = useMemo(
+  const ticket = useMemo(
     () =>
       bug === undefined
         ? ''
-        : buildStepsForBugTicketPrompt(
-            bug,
-            { uiIssues, consoleIssues, networkIssues },
-            countPotentialBugScreenshots(bug, screenshotEvidence),
-            extraInstructions,
-          ),
-    [
-      bug,
-      uiIssues,
-      consoleIssues,
-      networkIssues,
-      screenshotEvidence,
-      extraInstructions,
-    ],
+        : formatBugTicketDraft(buildBugTicketDraft(bug, lookup)),
+    [bug, lookup],
   );
+  const shots =
+    bug === undefined
+      ? []
+      : selectPotentialBugScreenshots(bug, screenshotEvidence);
 
-  async function copyPrompt(): Promise<void> {
+  async function copyTicket(): Promise<void> {
     try {
-      await navigator.clipboard.writeText(prompt);
+      await navigator.clipboard.writeText(ticket);
       setCopyStatus('copied');
     } catch {
       setCopyStatus('failed');
@@ -79,7 +75,7 @@ export function PotentialBugPromptScreen({
 
   return (
     <section
-      aria-label="Bug ticket prompt"
+      aria-label="Bug ticket screen"
       className="flex min-w-0 flex-col gap-3"
     >
       <div className="flex min-w-0 items-center justify-between gap-2">
@@ -100,25 +96,26 @@ export function PotentialBugPromptScreen({
           <p className="min-w-0 truncate text-xs text-slate-600 dark:text-slate-300">
             {potentialBugTitle(bug, index)} · {bug.page.pathname}
           </p>
+          <BugTicketScreenshot evidence={shots} />
           <textarea
             readOnly
-            aria-label="Generated prompt"
+            aria-label="Draft ticket"
             className="min-h-[18rem] w-full rounded-md border border-slate-300 px-2 py-1 font-mono text-xs text-slate-900 dark:border-slate-600 dark:bg-slate-950 dark:text-slate-100"
-            value={prompt}
+            value={ticket}
             onFocus={selectWholePrompt}
             onClick={selectWholePrompt}
           />
-          <Button type="button" onClick={() => void copyPrompt()}>
-            Copy prompt
+          <Button type="button" onClick={() => void copyTicket()}>
+            Copy ticket
           </Button>
           {copyStatus === 'copied' ? (
             <p className="text-xs text-slate-600 dark:text-slate-300">
-              Copied.
+              Ticket copied.
             </p>
           ) : null}
           {copyStatus === 'failed' ? (
             <p role="alert" className="text-xs text-red-700 dark:text-red-300">
-              Copy failed. Click the prompt and copy it from the keyboard.
+              Copy failed. Click the ticket and copy it from the keyboard.
             </p>
           ) : null}
         </>

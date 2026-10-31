@@ -59,16 +59,14 @@ test('two unrelated issues in one session become two potential bugs', async () =
       'Diagnostics console error',
     );
     await expect(consoleBug).not.toContainText('related issue');
-    await uiBug.getByRole('button', { name: 'Generate prompt' }).click();
+    await uiBug.getByRole('button', { name: 'Create ticket' }).click();
     await expect(
-      sidePanel.getByRole('heading', { name: 'Steps for bug ticket' }),
+      sidePanel.getByRole('heading', { name: 'Bug ticket' }),
     ).toBeVisible();
-    const prompt = sidePanel.getByLabel('Generated prompt');
-    await expect(prompt).toHaveValue(/Diagnostics UI issue/);
-    await expect(prompt).toHaveValue(
-      /Steps to reproduce \(oldest first\):\n1\. /,
-    );
-    await expect(prompt).not.toHaveValue(/Diagnostics console error/);
+    const ticket = sidePanel.getByLabel('Draft ticket');
+    await expect(ticket).toHaveValue(/Diagnostics UI issue/);
+    await expect(ticket).toHaveValue(/## Steps to Reproduce\n1\. /);
+    await expect(ticket).not.toHaveValue(/Diagnostics console error/);
     await sidePanel.getByRole('button', { name: 'Back to summary' }).click();
     await expect(cards).toHaveCount(2);
 
@@ -80,10 +78,10 @@ test('two unrelated issues in one session become two potential bugs', async () =
       consoleBug.getByRole('button', { name: 'Include' }),
     ).toBeVisible();
     await expect(
-      consoleBug.getByRole('button', { name: 'Generate prompt' }),
+      consoleBug.getByRole('button', { name: 'Create ticket' }),
     ).toBeDisabled();
 
-    await uiBug.getByRole('button', { name: 'Review' }).click();
+    await sidePanel.getByRole('button', { name: 'Issues' }).click();
     await expect(
       sidePanel.getByRole('heading', { name: 'Issue Review' }),
     ).toBeVisible({ timeout: 10_000 });

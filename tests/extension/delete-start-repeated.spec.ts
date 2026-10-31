@@ -18,28 +18,15 @@ async function captureActivityBeforeStop(
   sidePanel: Parameters<typeof clickSidePanelControl>[0],
   page: Parameters<typeof clickSidePanelControl>[1],
   withMarkEvidence: boolean,
-  cycle: number,
 ): Promise<void> {
   if (withMarkEvidence) {
     await page.click('#action-event');
     await page.click('#ui-issue');
     await page.waitForTimeout(400);
-
-    await clickSidePanelControl(sidePanel, page, { name: 'Capture bug now' });
-    await sidePanel
-      .getByRole('textbox', { name: /What went wrong\?/ })
-      .fill(`Delete-start cycle ${cycle}`);
-    await clickSidePanelControl(sidePanel, page, { name: 'Save bug' });
-    await expect(sidePanel.getByText('Bug captured')).toBeVisible({
-      timeout: 10_000,
-    });
-    await clickSidePanelControl(sidePanel, page, {
-      name: 'Stop and review',
-      withinLabel: 'Bug captured',
-    });
+    await stopFromCapture(sidePanel, page);
     await expect(
       sidePanel.getByLabel('Potential bugs', { exact: true }),
-    ).toContainText(`Delete-start cycle ${cycle}`);
+    ).toContainText('Diagnostics UI issue');
     return;
   }
 
@@ -83,7 +70,7 @@ test('delete session then start capture repeats on the same page', async () => {
       }
 
       await expectCapturingThisTab(sidePanel, page);
-      await captureActivityBeforeStop(sidePanel, page, withMarkEvidence, cycle);
+      await captureActivityBeforeStop(sidePanel, page, withMarkEvidence);
 
       await deleteSessionFromSummary(sidePanel, page);
       await expect(

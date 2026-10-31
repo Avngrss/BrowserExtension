@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { describeActionReportStep } from '@/src/actions/action-report-steps';
+import {
+  describeActionReportStep,
+  rewriteOpaqueNavigationStep,
+} from '@/src/actions/action-report-steps';
 
 describe('describeActionReportStep', () => {
   it('formats navigation and clicks without sensitive values', () => {
@@ -12,6 +15,16 @@ describe('describeActionReportStep', () => {
         url: 'https://example.test/products',
       }),
     ).toBe('Opened the products page.');
+
+    expect(
+      describeActionReportStep({
+        id: 'a1b',
+        sessionId: 's1',
+        timestamp: 1,
+        type: 'navigation',
+        url: 'https://example.test/product/01M69B1HW8E19B80PAP2YK9WF0',
+      }),
+    ).toBe('Opened the product page.');
 
     expect(
       describeActionReportStep({
@@ -65,5 +78,14 @@ describe('describeActionReportStep', () => {
         },
       }),
     ).toBe('Entered a value in the Email field.');
+  });
+
+  it('rewrites a stored opaque navigation step using the page path', () => {
+    expect(
+      rewriteOpaqueNavigationStep(
+        'Opened the 01M69B1HW8E19B80PAP2YK9WF0 page.',
+        '/product/01M69B1HW8E19B80PAP2YK9WF0',
+      ),
+    ).toBe('Opened the product page.');
   });
 });

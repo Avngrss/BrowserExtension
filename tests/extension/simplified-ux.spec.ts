@@ -164,10 +164,7 @@ test('simplified capture, summary, and review flow', async () => {
       sidePanel.getByRole('region', { name: 'Session Summary' }),
     ).toBeVisible();
 
-    await sidePanel
-      .getByRole('button', { name: 'Review', exact: true })
-      .first()
-      .click();
+    await sidePanel.getByRole('button', { name: 'Issues' }).first().click();
     await expect(
       sidePanel.getByRole('region', { name: 'Issue Review' }),
     ).toBeVisible();

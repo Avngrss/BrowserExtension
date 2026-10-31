@@ -102,29 +102,54 @@ export function buildPotentialBugDescription(
     : `Potential bug detected on ${bug.page.pathname}.`;
 }
 
+function isScreenshotLinkedToBug(
+  bug: PotentialBug,
+  item: ScreenshotEvidence,
+): boolean {
+  if (item.sessionId !== bug.sessionId) {
+    return false;
+  }
+  if (item.issueCategory === 'mark') {
+    return item.issueId === bug.id;
+  }
+  return bug.issues.some(
+    (issue) =>
+      issue.category === item.issueCategory && issue.issueId === item.issueId,
+  );
+}
+
+export function selectPotentialBugScreenshots(
+  bug: PotentialBug,
+  evidence: ScreenshotEvidence[],
+): ScreenshotEvidence[] {
+  const frames = new Set<string>();
+  const selected: ScreenshotEvidence[] = [];
+  for (const item of evidence) {
+    if (item.status !== 'captured' || !isScreenshotLinkedToBug(bug, item)) {
+      continue;
+    }
+    if (frames.has(item.frameId)) {
+      continue;
+    }
+    frames.add(item.frameId);
+    selected.push(item);
+  }
+  return selected;
+}
+
 export function countPotentialBugScreenshots(
   bug: PotentialBug,
   evidence: ScreenshotEvidence[],
 ): number {
   const frames = new Set<string>();
   for (const item of evidence) {
-    if (item.sessionId !== bug.sessionId) {
-      continue;
-    }
     if (item.status === 'failed' || item.status === 'unavailable') {
       continue;
     }
-    const linked =
-      item.issueCategory === 'mark'
-        ? item.issueId === bug.id
-        : bug.issues.some(
-            (issue) =>
-              issue.category === item.issueCategory &&
-              issue.issueId === item.issueId,
-          );
-    if (linked) {
-      frames.add(item.frameId);
+    if (!isScreenshotLinkedToBug(bug, item)) {
+      continue;
     }
+    frames.add(item.frameId);
   }
   return frames.size;
 }
